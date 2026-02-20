@@ -1,0 +1,39 @@
+# Minimal project-wide EditorConfig
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# YAML (Databricks Asset Bundles, dbt YAML)
+[*.{yml,yaml}]
+indent_size = 2
+
+# dbt / SQL / Jinja
+[*.{sql,j2,jinja,sql.j2,sql.jinja}]
+indent_size = 4
+
+# Python
+[*.py]
+indent_size = 4
+
+# JSON / TOML
+[*.{json,jsonc,toml}]
+indent_size = 2
+
+# Markdown: preserve intentional trailing spaces
+[*.md]
+trim_trailing_whitespace = false
+
+# Justfile
+[justfile]
+indent_style = space
+indent_size = 4
+
+# Makefile: tabs required
+[Makefile]
+indent_style = tab

@@ -1,0 +1,18 @@
+version: 2
+
+macros:
+  - name: generate_schema_name
+    description: >
+      Overrides the default dbt schema naming logic. The logic is implemented in
+      vg-dbt-utils, and this macro is a shim. This shim is necessary as it is not
+      possible to override generate_schema_name in an installed package.
+
+      "dbt will ignore any custom generate_schema_name macro defined in installed
+      packages." - ref: https://docs.getdbt.com/reference/resource-configs/schema#custom-schema-naming
+    arguments:
+      - name: custom_schema_name
+        type: string
+        description: The schema name defined in dbt_project.yml or a model config block.
+      - name: node
+        type: object
+        description: The dbt node (model, seed, etc.) being processed.

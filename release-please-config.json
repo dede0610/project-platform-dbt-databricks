@@ -1,0 +1,25 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "changelog-path": "CHANGELOG.md",
+      "changelog-sections": [
+        { "type": "feat", "section": "🚀 New Features", "hidden": false },
+        { "type": "fix", "section": "🐛 Bug Fixes", "hidden": false },
+        { "type": "chore", "section": "⚙️ Maintenance", "hidden": false },
+        { "type": "docs", "section": "📚 Documentation", "hidden": false },
+        { "type": "perf", "section": "⚡ Performance", "hidden": false }
+      ],
+      "extra-files": [
+        {
+          "path": "pyproject.toml",
+          "type": "generic"
+        },
+        {
+          "path": "dbt_project.yml",
+          "type": "generic"
+        }
+      ]
+    }
+  }
+}

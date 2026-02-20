@@ -1,0 +1,44 @@
+version: 2
+
+anchors:
+  - &link_src_pk
+      name: src_pk                    # Must be overwritten by merge
+      data_type: binary
+      constraints:
+        - type: primary_key
+          warn_unenforced: false
+        - type: not_null
+      data_tests:
+        - not_null
+        - unique
+
+  - &link_src_nk
+      name: src_nk                    # Must be overwritten by merge
+      data_type: binary
+      constraints:                    # Must be overwritten by merge
+        - type: not_null
+        - type: foreign_key           # Must be overwritten by merge
+          to: relation                # Must be overwritten by merge
+          to_columns: list_of_columns # Must be overwritten by merge
+          warn_unenforced: false      # Must be overwritten by merge
+      data_tests:                     # Must be overwritten by merge
+        - relationships:              # Must be overwritten by merge
+            arguments:                # Must be overwritten by merge
+              to: relation            # Must be overwritten by merge
+              field: column           # Must be overwritten by merge
+
+  - &link_src_ldts
+      name: load_date
+      description: "Date record was loaded"
+      data_type: date
+      constraints:
+        - type: not_null
+
+  - &link_src_source
+      name: record_source
+      description: "The source of the record"
+      data_type: string
+      constraints:
+        - type: not_null
+
+models:

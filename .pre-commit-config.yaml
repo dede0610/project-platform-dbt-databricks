@@ -1,0 +1,59 @@
+default_install_hook_types: [commit-msg, pre-commit]
+default_stages: [pre-commit, manual]
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: commitizen
+        name: "git · Validate commit message"
+        entry: cz check
+        args: [--commit-msg-file]
+        require_serial: true
+        language: system
+        stages: [commit-msg]
+      - id: uv-lock-check
+        name: "uv · Validate lock file"
+        entry: uv lock
+        args: ["--check"]
+        require_serial: true
+        language: system
+        pass_filenames: false
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+        name: "Checker · check-yaml"
+      - id: check-toml
+        name: "Checker · check-toml"
+      - id: end-of-file-fixer
+        name: "Fixer · end-of-file-fixer"
+      - id: trailing-whitespace
+        name: "Fixer · trailing-whitespace"
+        args: ["--markdown-linebreak-ext=md,markdown"]
+      - id: mixed-line-ending
+        name: "Fixer · mixed-line-ending"
+        args: ["--fix=lf"]
+  - repo: https://github.com/tconbeer/sqlfmt
+    rev: v0.28.2
+    hooks:
+      - id: sqlfmt
+        name: "SQL · Format SQL code files"
+        language_version: python
+        additional_dependencies: ['.[jinjafmt]']
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 3.5.0
+    hooks:
+      - id: sqlfluff-lint
+        name: "SQL · Lint SQL code files"
+        additional_dependencies: ['dbt-databricks>=1.11.0,<1.12.0', 'sqlfluff-templater-dbt']
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.14.10
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        name: "python · Lint and perform safe auto-fixes with Ruff"
+        args: [--fix]
+      # Run the formatter.
+      - id: ruff-format
+        name: "python · Format with Ruff"

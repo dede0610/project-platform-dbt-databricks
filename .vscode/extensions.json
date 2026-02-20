@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "charliermarsh.ruff",
+        "databricks.databricks",
+        "editorconfig.editorconfig",
+        "innoverio.vscode-dbt-power-user",
+        "dorzey.vscode-sqlfluff",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "redhat.vscode-yaml",
+    ]
+}

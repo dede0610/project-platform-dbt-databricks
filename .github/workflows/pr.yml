@@ -1,0 +1,464 @@
+name: PR
+
+on:
+  pull_request:
+    types: [edited, opened, reopened, synchronize]
+    branches: [main]
+
+# Default to read-only for all jobs; raise per job only if needed
+permissions: read-all
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+    name: Check PR title
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Check PR title
+        run: |
+          uv run cz check --message "${{ github.event.pull_request.title }}"
+
+  check-pre-commit:
+    name: Check pre-commits
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: ./.github/actions/changed-files-to-nul
+        with:
+          output: ${{ runner.temp }}/changed-files.nul
+
+      - name: Run pre-commit hooks
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        shell: bash
+        env:
+          FILES_NUL: ${{ steps.changed-files.outputs.file_list_path }}
+        run: |
+          set -euo pipefail
+
+          # Number of  files per pre-commit invocation
+          BATCH_SIZE=200
+
+          # Function to run a pre-commit hook over the NUL-delimited files in batches
+          run_hook() {
+            local hook="$1"
+            echo "=== Running pre-commit hook: ${hook} ==="
+            # -0: NUL-delimited input
+            # -a files.nul: read from file
+            # -r: do nothing if input is empty
+            # -n $BATCH_SIZE: pass up to N files per invocation to avoid ARG_MAX issues
+            xargs -0 -a "$FILES_NUL" -r -n "$BATCH_SIZE" \
+              uv run pre-commit run "$hook" --files
+          }
+
+          run_hook "check-yaml"
+          run_hook "check-toml"
+          run_hook "end-of-file-fixer"
+          run_hook "trailing-whitespace"
+          run_hook "mixed-line-ending"
+
+  check-dbt-autofix:
+    # Add permissions to allow posting PR comments
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+      issues: write
+
+    name: Check for deprecated dbt configuration
+    runs-on: ubuntu-latest
+    env:
+      DBT_AUTOFIX_JSON: ./autofix.jsonl
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, and install uv
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      # Capture JSONL output to a file (do not fail workflow if command fails)
+      - name: Run dbt-autofix (JSONL)
+        id: run_autofix
+        shell: bash
+        run: |
+          set -o pipefail
+          uv run dbt-autofix deprecations --dry-run --json | tee "$DBT_AUTOFIX_JSON" || true
+          echo "dbt-autofix completed; output captured in $DBT_AUTOFIX_JSON (workflow will not fail)."
+
+      # Build a Markdown report from the JSONL
+      - name: Build PR comment body
+        id: build_comment
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- dbt-autofix-report -->';
+            const title = '### dbt‑autofix: Deprecated dbt configuration';
+            const path = process.env.DBT_AUTOFIX_JSON;
+            const workspace = (process.env.GITHUB_WORKSPACE || '').replace(/\\/g, '/'); // normalize
+            // Make a clean, repo-relative display path
+            function toDisplayPath(p) {
+              if (!p || typeof p !== 'string') return 'unknown';
+              // Normalize slashes to forward
+              let norm = p.replace(/\\/g, '/');
+              // If the file path has duplicated workspace (rare), collapse it
+              // e.g., /home/runner/work/repo/repo/repo/file -> first occurrence wins
+              if (workspace && norm.startsWith(workspace)) {
+                norm = norm.slice(workspace.length);
+                if (norm.startsWith('/')) norm = norm.slice(1);
+                return norm || 'unknown';
+              }
+              // Try relative from workspace using Node path (handles different roots)
+              try {
+                const rel = path.posix.relative(workspace || '/', norm);
+                if (rel && !rel.startsWith('..')) return rel;
+              } catch (_) { /* ignore */ }
+              // Fallback to basename if we can't compute a nice relative path
+              try {
+                const base = path.posix.basename(norm);
+                return base || norm;
+              } catch (_) {
+                return norm;
+              }
+            }
+            let md = `${marker}\n${title}\n`;
+            if (!fs.existsSync(path)) {
+              return md + '\n_No output generated (no output file found)._';
+            }
+            const raw = fs.readFileSync(path, 'utf8').trim();
+            if (!raw) {
+              return md + '\n_No output generated (empty file)._';
+            }
+            const lines = raw.split('\n').filter(Boolean);
+            // Parse lines
+            const dryRuns = [];   // each corresponds to one file scan with refactors
+            let sawComplete = false;
+            for (const line of lines) {
+              try {
+                const obj = JSON.parse(line);
+                if (obj && obj.mode === 'complete') {
+                  sawComplete = true;
+                } else if (obj && obj.mode === 'dry_run') {
+                  dryRuns.push(obj);
+                }
+              } catch (e) {
+                // ignore non‑JSON lines
+              }
+            }
+            // Aggregate all refactors by file_path
+            const byFile = {};
+            let total = 0;
+            for (const run of dryRuns) {
+              const file = run.file_path || 'unknown';
+              const refactors = Array.isArray(run.refactors) ? run.refactors : [];
+              if (!byFile[file]) byFile[file] = [];
+              byFile[file].push(...refactors);
+              total += refactors.length;
+            }
+            if (sawComplete && total === 0) {
+              md += '\n✅ No deprecations detected.\n';
+            } else if (total > 0) {
+              md += `\n⚠️ Found **${total}** deprecation${total === 1 ? '' : 's'} across **${Object.keys(byFile).length}** file${Object.keys(byFile).length === 1 ? '' : 's'} (dry run).\n\n`;
+              for (const [file, refactors] of Object.entries(byFile)) {
+                md += `**${toDisplayPath(file)}**\n`;
+                for (const r of refactors) {
+                  const dep = r.deprecation || 'Deprecation';
+                  // Replace single quotes with backticks in the log text
+                  const log =
+                    typeof r.log === 'string'
+                      ? r.log.replace(/'/g, '`')
+                      : '';
+                  md += `- \`${dep}\`${log ? ` — ${log}` : ''}\n`;
+                }
+                md += '\n';
+              }
+              // Raw JSONL for traceability
+              md += `<details><summary>Raw JSONL output</summary>\n\n\`\`\`json\n${raw}\n\`\`\`\n</details>\n`;
+            } else {
+              // No 'complete' sentinel and no refactors => ambiguous/no output
+              md += '\n_Output did not include expected markers. See raw output below._\n';
+              md += `<details><summary>Raw JSONL output</summary>\n\n\`\`\`\n${raw}\n\`\`\`\n</details>\n`;
+            }
+            return md;
+
+      # Add the same report to the Action run summary
+      - name: Add report to job summary
+        run: |
+          cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          ${{ steps.build_comment.outputs.result }}
+          EOF
+
+      # Create or update a PR comment
+      - name: Comment on PR with dbt‑autofix results
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: mshick/add-pr-comment@v2
+        with:
+          message: ${{ steps.build_comment.outputs.result }}
+          # Use a stable ID so subsequent runs update the same comment
+          message-id: dbt-autofix-report
+          allow-repeats: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sqlfluff-lint:
+    # Needs to read code and publish GitHub Checks annotations
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    name: Lint dbt project
+    runs-on: ubuntu-latest
+    env:
+      ANNOTATIONS_FILE: ./annotations.json
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ vars.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DBT_PROFILES_DIR: ./ci_cd
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Setup git for dbt deps
+        uses: ./.github/actions/setup-git-for-dbt-deps
+        with:
+          app-id: ${{ secrets.VG_DBT_UTILS_APP_ID }}
+          private-key: ${{ secrets.VG_DBT_UTILS_APP_PRIVATE_KEY }}
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: ./.github/actions/changed-files-to-nul
+        with:
+          files:
+            src/models/**/**.sql
+          output: ${{ runner.temp }}/changed-files.nul
+
+      - name: Check dbt connection
+        if: steps.changed-files.outputs.all_changed_files != ''
+        run: |
+          uv run dbt debug
+          uv run dbt deps
+
+      - name: Lint dbt models
+        if: steps.changed-files.outputs.any_changed == 'true'
+        shell: bash
+        env:
+          FILES_NUL: ${{ steps.changed-files.outputs.file_list_path }}
+        run: |
+          # Number of  files per pre-commit invocation
+          BATCH_SIZE=200
+
+          xargs -0 -a "$FILES_NUL" -r -n "$BATCH_SIZE" \
+            uv run sqlfluff lint \
+              --templater dbt \
+              --format github-annotation \
+              --annotation-level failure \
+              --nofail \
+              --write-output "$ANNOTATIONS_FILE" || true
+
+      - name: Check for annotations
+        id: check_annotations
+        if: steps.changed-files.outputs.all_changed_files != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          has_annotations=false
+          if [ -s "$ANNOTATIONS_FILE" ] && (
+            command -v jq >/dev/null 2>&1 && jq -e 'type=="array" and length>0' "$ANNOTATIONS_FILE" >/dev/null 2>&1
+          ); then
+            has_annotations=true
+          fi
+          echo "has_annotations=${has_annotations}" >> "$GITHUB_OUTPUT"
+
+      - name: Show annotations file contents
+        shell: bash
+        if: steps.changed-files.outputs.all_changed_files != ''
+        run: |
+          echo "----- Debug: Checking $ANNOTATIONS_FILE -----"
+          if [ ! -f "$ANNOTATIONS_FILE" ]; then
+            echo "$ANNOTATIONS_FILE does NOT exist."
+            exit 0
+          fi
+
+          echo "----- Raw file contents -----"
+          cat "$ANNOTATIONS_FILE" | head -c 1000000 || true
+
+          echo "----- Attempt JSON pretty-print -----"
+          jq . "$ANNOTATIONS_FILE" || echo "(File is not valid JSON)"
+
+      - name: Annotate
+        if: steps.check_annotations.outputs.has_annotations == 'true'
+        uses: yuzutech/annotations-action@v0.5.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          title: "SQLFluff Lint"
+          input: "${{ env.ANNOTATIONS_FILE }}"
+          ignore-missing-file: false
+
+  check-sqlfmt:
+    permissions:
+      contents: read
+
+    name: Check SQL formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v47
+
+      - name: Run sqlfmt
+        shell: bash
+        run: |
+          uv run sqlfmt --diff ${{ steps.changed-files.outputs.all_changed_files }}
+
+  check-dbt-unit-tests:
+    permissions:
+      contents: read
+      checks: write
+
+    name: Check dbt unit tests
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ vars.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DBT_PROFILES_DIR: ./ci_cd
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Setup git for dbt deps
+        uses: ./.github/actions/setup-git-for-dbt-deps
+        with:
+          app-id: ${{ secrets.VG_DBT_UTILS_APP_ID }}
+          private-key: ${{ secrets.VG_DBT_UTILS_APP_PRIVATE_KEY }}
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: ./.github/actions/changed-files-to-nul
+        with:
+          files: |
+            src/**/*.*
+            packages.yml
+            package.lock
+            dbt_project.yml
+          output: ${{ runner.temp }}/changed-files.nul
+
+      # Only run if elements of the dbt project have been modified
+      - name: Run dbt doc generate
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          uv run dbt deps
+          uv run dbt test --select "test_type:unit"
+
+  check-dbt-docs:
+    permissions:
+      contents: read
+      checks: write
+
+    name: Check generation of dbt docs
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ vars.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DBT_PROFILES_DIR: ./ci_cd
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Setup git for dbt deps
+        uses: ./.github/actions/setup-git-for-dbt-deps
+        with:
+          app-id: ${{ secrets.VG_DBT_UTILS_APP_ID }}
+          private-key: ${{ secrets.VG_DBT_UTILS_APP_PRIVATE_KEY }}
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: ./.github/actions/changed-files-to-nul
+        with:
+          files: |
+            src/**/*.*
+            packages.yml
+            package.lock
+            dbt_project.yml
+          output: ${{ runner.temp }}/changed-files.nul
+
+      # Only run if elements of the dbt project have been modified
+      - name: Run dbt doc generate
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          uv run dbt deps
+          uv run dbt docs generate

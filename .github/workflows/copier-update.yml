@@ -1,0 +1,70 @@
+name: Copier Update
+
+on:
+  schedule:
+    # Runs at 00:00 every Monday
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # Allows you to trigger it manually for testing
+
+# Default to read-only; escalate at job level only when needed
+permissions: read-all
+
+concurrency:
+  group: copier-update
+  cancel-in-progress: false  # keep the previous run if a new schedule kicks in
+
+jobs:
+  update-template:
+    # This job needs to create a PR and commit via the action—grant only what's necessary
+    permissions:
+      contents: write         # allow branch/commit creation for the PR
+      pull-requests: write    # allow opening/updating the PR and applying labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python, and install uv
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: false
+
+      - name: Run Copier Update
+        run: |
+          uvx copier update --skip-answered
+
+      - name: Check for changes
+        id: git_check
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for merge conflicts
+        if: steps.git_check.outputs.changed == 'true'
+        run: |
+          echo "-- git status --"
+          git status
+          echo "-- end git status --"
+          if git status | grep -q "Unmerged paths"; then
+            echo "Error: Merge conflicts detected. Please resolve locally."
+            exit 1
+          fi
+
+      - name: Create Pull Request
+        if: steps.git_check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update project from template"
+          branch: copier-update--main
+          title: "🤖 Periodic Copier Template Update"
+          body: |
+            This is an automated PR to sync the project with the latest version of the template.
+
+            **Note:** Please check for any `.rej` files in this PR. If they exist, manual resolution is required.
+          labels: |
+            template-sync
+            automated-pr

@@ -1,0 +1,29 @@
+name: Deploy release to prd (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag (e.g., v1.2.3)"
+        required: true
+        type: string
+
+# Default to read-only for the whole workflow
+permissions: read-all
+
+concurrency:
+  group: deploy-prd
+  cancel-in-progress: false  # keep the previous manual run; change to true if you prefer cancelling
+
+jobs:
+  deploy-to-prd:
+    # Match the reusable workflow's requirements only
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_deploy-reusable.yml
+    with:
+      environment: prd
+      ref: ${{ inputs.release_tag }}
+      is_tag: true
+      production: true
+    secrets: inherit

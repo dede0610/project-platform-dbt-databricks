@@ -1,0 +1,105 @@
+name: dbt_databricks_project
+version: 0.0.1 # x-release-please-version
+config-version: 2
+profile: dbt_databricks_project
+
+# These configurations specify where dbt should look for different types of files.
+# For Databricks asset bundles, we put everything in src, as you may have
+# non-dbt resources in your project.
+model-paths:
+  - src/models
+analysis-paths:
+  - src/analyses
+test-paths:
+  - src/tests
+seed-paths:
+  - src/seeds
+macro-paths:
+  - src/macros
+snapshot-paths:
+  - src/snapshots
+
+flags:
+  # ref: https://docs.getdbt.com/reference/global-configs/behavior-changes#package-override-for-built-in-materialization
+  require_explicit_package_overrides_for_builtin_materializations: true
+
+  # ref: https://docs.getdbt.com/reference/deprecations#argumentspropertyingenerictestdeprecation
+  require_generic_test_arguments_property: true
+
+  # ref: https://docs.getdbt.com/reference/global-configs/databricks-changes#use-managed-iceberg
+  # Added to suppress warnings.
+  use_managed_iceberg: true
+
+  # ref: https://docs.getdbt.com/reference/global-configs/databricks-changes#use-restructured-materializations
+  # Added to suppress warnings.
+  use_materialization_v2: true
+
+clean-targets: # directories to be removed by `dbt clean`
+  - target
+  - dbt_packages
+
+vars:
+  # version is not exposed by dbt as a built-in variable, so we set a "redundant"
+  # variable here for use in macros.
+  project_version: 0.0.1 # x-release-please-version
+  # Automate DV hashing configuration
+  # ref: https://automate-dv.readthedocs.io/en/latest/macros/#hashing-configuration
+  hash: SHA
+  concat_string: '||'
+  null_placeholder_string: '^^'
+  hash_content_casing: 'UPPER'
+  enable_native_hashes: true
+
+
+models:
+  dbt_artifacts:
+    +schema: dbt_artifacts
+    sources:
+      +schema: dbt_artifacts_sources
+    staging:
+      +schema: dbt_artifacts_staging
+  dbt_databricks_project:
+    # ref: https://docs.getdbt.com/reference/resource-configs/group
+    +group: dbt_databricks_project
+    # ref: https://docs.getdbt.com/reference/resource-configs/access
+    +access: public
+    # ref: https://docs.getdbt.com/reference/resource-configs/persist_docs
+    +persist_docs:
+      relation: true
+      columns: true
+
+    raw_vault:
+      +materialized: incremental
+      +tags:
+        - 'raw_vault'
+      hubs:
+        +tags:
+          - 'hub'
+        # Enforce data contract checks for Raw Vault Hubs
+        +on_schema_change: fail
+        +contract:
+          enforced: true
+      links:
+        +tags:
+          - 'link'
+        # Enforce data contract checks for Raw Vault Links
+        +on_schema_change: fail
+        +contract:
+          enforced: true
+      sats:
+        +tags:
+          - 'satellite'
+
+    stage:
+      +schema: private
+      +materialized: view
+      +tags:
+        - 'stage'
+      +contract:
+        enforced: true
+
+on-run-start:
+  - "{{ vg_dbt_utils.log_project_version() }}"
+
+on-run-end:
+  - "{{ dbt_artifacts.upload_results(results) }}"
