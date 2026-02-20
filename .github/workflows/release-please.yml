@@ -52,7 +52,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Commit uv.lock
-        uses: devops-infra/action-commit-push@v1.0.3
+        uses: devops-infra/action-commit-push@v1.1.0
         with:
           github_token: "${{ secrets.GITHUB_TOKEN }}"
           commit_prefix: "chore: "
