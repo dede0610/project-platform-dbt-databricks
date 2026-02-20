@@ -1,0 +1,43 @@
+name: Changed Files to NUL
+description: "Get changed files with tj-actions/changed-files and write changed-files.nul"
+inputs:
+  files:
+    description: "Optional file globs passed to changed-files"
+    required: false
+    default: ""
+  output:
+    description: "Path to write the NUL-delimited file list"
+    required: false
+    default: "changed-files.nul"
+outputs:
+  any_changed:
+    value: ${{ steps.changed-files.outputs.any_changed }}
+
+  file_list_path:
+    description: "Path to the NUL-delimited file list (if created)"
+    value: ${{ steps.set_path.outputs.file_list_path }}
+runs:
+  using: "composite"
+  steps:
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v47
+      with:
+        files: ${{ inputs.files }}
+
+    - name: Make NUL-delimited list
+      if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        out="${{ inputs.output }}"
+        # Ensure parent directory exists
+        mkdir -p "$(dirname "$out")"
+        printf '%s\0' ${{ steps.changed-files.outputs.all_changed_files }} > "$out"
+        echo "Wrote NUL-delimited file list to: $out"
+
+    - id: set_path
+      if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+      shell: bash
+      run: |
+        echo "file_list_path=${{ inputs.output }}" >> "$GITHUB_OUTPUT"

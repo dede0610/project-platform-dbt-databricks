@@ -1,0 +1,24 @@
+name: Setup git for dbt deps
+description: "Setup of git to enable dbt deps to install private package"
+inputs:
+  app-id:
+    description: "GitHub App ID to use for authentication"
+    required: true
+  private-key:
+    description: "GitHub App private key (PEM format) to use for authentication"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Generate GitHub App token
+      id: app-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: vg-vicgrid
+
+    - name: Configure git to use GitHub token
+      shell: bash
+      run: |
+        git config --global url."https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/".insteadOf "https://github.com/"

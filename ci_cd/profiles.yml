@@ -1,0 +1,11 @@
+dbt_databricks_project:
+  outputs:
+    databricks_env:
+      catalog: dev_dbt
+      host: "{{ env_var('DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+      schema: default
+      threads: 4
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      type: databricks
+  target: databricks_env

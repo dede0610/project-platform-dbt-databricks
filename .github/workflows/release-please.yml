@@ -1,0 +1,295 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+name: release-please
+
+jobs:
+  release-please:
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      pr: ${{ steps.release.outputs.pr }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+
+  update-uv-lock:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: release-please
+    if: ${{ needs.release-please.outputs.pr }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # We must check out the branch created by release-please
+          ref: ${{ fromJson(needs.release-please.outputs.pr).headBranchName }}
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Update uv.lock
+        run: |
+          uv lock
+
+      - name: Configure git as github-actions[bot]
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit uv.lock
+        uses: devops-infra/action-commit-push@v1.0.3
+        with:
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          commit_prefix: "chore: "
+          commit_message: "update uv.lock"
+
+  deploy-to-dev:
+    permissions:
+      deployments: write
+      contents: read
+    needs: release-please
+    # Run when release-please did NOT create a release (typical PR merges).
+    if: ${{ needs.release-please.outputs.release_created != 'true' }}
+    uses: ./.github/workflows/_deploy-reusable.yml
+    with:
+      environment: dev
+      # Deploy the merge commit that just landed on main
+      ref: ${{ github.sha }}
+      is_tag: false
+      production: false
+    secrets: inherit
+
+  deploy-to-tst:
+    permissions:
+      deployments: write
+      contents: read
+    # This job only runs if the release-please job actually created a release
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    uses: ./.github/workflows/_deploy-reusable.yml
+    with:
+      environment: tst
+      ref: ${{ needs.release-please.outputs.tag_name }}
+      is_tag: true
+      production: false
+    secrets: inherit
+
+  label-associated-pr:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Find PR(s) for commit
+        id: prs-for-commit
+        uses: actions/github-script@v8
+        env:
+          SHA: ${{ needs.release-please.outputs.sha }}
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const sha = process.env.SHA;
+            const res = await github.request('GET /repos/{owner}/{repo}/commits/{ref}/pulls', {
+                owner, repo, ref: sha
+            });
+            const numbers = res.data.map(pr => pr.number);
+            core.setOutput('numbers', JSON.stringify(numbers));
+
+      - name: Add label to PR
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ fromJSON(steps.prs-for-commit.outputs.numbers)[0] }}
+          labels: "autorelease: published"
+
+      - name: Remove label from PR
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ fromJSON(steps.prs-for-commit.outputs.numbers)[0] }}
+          labels: "autorelease: tagged"
+
+  # 💬 Add a comment on the PR about the deployment (DEV or TST)
+  comment-deploy:
+    needs: [release-please, deploy-to-dev, deploy-to-tst]
+    if: ${{ always() }}          # run regardless of upstream status; steps will decide behavior
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      # Inputs from upstream jobs
+      RELEASE_CREATED: ${{ needs.release-please.outputs.release_created }}
+      DEV_RESULT:      ${{ needs.deploy-to-dev.outputs.result }}
+      DEV_REF_SHA:     ${{ github.sha }}
+      TST_RESULT:      ${{ needs.deploy-to-tst.outputs.result }}
+      TST_TAG_NAME:    ${{ needs.release-please.outputs.tag_name }}
+      TST_TAG_SHA:     ${{ needs.release-please.outputs.sha }}
+
+    steps:
+      - name: Checkout (shallow ok)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # Decide which context to use and compute the target SHA for PR lookup
+      - name: Select deployment context & ref
+        id: ctx
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const releaseCreated = (process.env.RELEASE_CREATED || '').toLowerCase() === 'true';
+            const envName  = releaseCreated ? 'tst' : 'dev';
+            const result   = releaseCreated
+              ? (process.env.TST_RESULT || 'unknown')
+              : (process.env.DEV_RESULT || 'unknown');
+            const sha      = releaseCreated
+              ? (process.env.TST_TAG_SHA || '')
+              : (process.env.DEV_REF_SHA || '');
+            const refLabel = releaseCreated
+              ? `${process.env.TST_TAG_NAME || 'unknown'} (${process.env.TST_TAG_SHA || ''})`
+              : (process.env.DEV_REF_SHA || 'unknown');
+
+            if (!sha) {
+              core.info(`No SHA available for env=${envName}.`);
+            } else {
+              core.info(`Using env=${envName}, sha=${sha}, result=${result}, refLabel=${refLabel}`);
+            }
+
+            return JSON.stringify({ envName, result, sha, refLabel });
+
+      # Find the PR associated with the selected SHA
+      - name: Find PR for selected ref
+        id: find-pr
+        if: ${{ fromJSON(steps.ctx.outputs.result).sha != '' }}
+        uses: jwalton/gh-find-current-pr@v1
+        with:
+          sha: ${{ fromJSON(steps.ctx.outputs.result).sha }}
+          state: all
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build the markdown body for the PR comment
+      - name: Build deployment comment body
+        id: build_body
+        if: ${{ steps.find-pr.outputs.number != '' }}
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const data = JSON.parse(process.env.CTX || '{}');
+            const envName  = data.envName || 'unknown';
+            const result   = data.result  || 'unknown';
+            const refLabel = data.refLabel || 'unknown';
+
+            const { owner, repo } = context.repo;
+            const actor     = context.actor;
+            const workflow  = context.workflow;
+            const runNumber = context.runNumber;
+            const runId     = process.env.GITHUB_RUN_ID;
+
+            const envActivityUrl = `https://github.com/${owner}/${repo}/deployments/activity_log?environment=${encodeURIComponent(envName)}`;
+            const workflowRunUrl = `https://github.com/${owner}/${repo}/actions/runs/${runId}`;
+
+            const status = (() => {
+              const s = (result || '').toLowerCase();
+              if (s.includes('success') || s.includes('ok') || s === 'passed') return '🚀';
+              if (s.includes('fail') || s.includes('error')) return '❌';
+              return 'ℹ️';
+            })();
+
+            let body = `<!-- deploy-comment -->\n`;
+            body += `**${status} Deployed to [${envName}](${envActivityUrl})**`;
+            body += ` by @${actor} via **${workflow}** [#${runNumber}](${workflowRunUrl})\n`;
+            body += `- Result: \`${result}\`\n`;
+            body += `- Ref: \`${refLabel}\`\n`;
+
+            return body;
+        env:
+          CTX: ${{ steps.ctx.outputs.result }}
+
+      # 4) Post (upsert) the PR comment
+      - name: Comment on PR with deployment details
+        if: ${{ steps.find-pr.outputs.number != '' }}
+        uses: mshick/add-pr-comment@v2
+        with:
+          issue: ${{ steps.find-pr.outputs.number }}
+          message: ${{ steps.build_body.outputs.result }}
+          message-id: deploy-comment
+          allow-repeats: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Log when no PR is found
+      - name: No PR found (skip commenting)
+        if: ${{ steps.find-pr.outputs.number == '' }}
+        run: echo "No associated PR found for selected ref; skipping comment."
+
+  publish-dbt-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write # to deploy to pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    # This job only runs if the release-please job actually created a release
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-pages.outputs.page_url }}
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ vars.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DBT_PROFILES_DIR: ./ci_cd
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Setup git for dbt deps
+        uses: ./.github/actions/setup-git-for-dbt-deps
+        with:
+          app-id: ${{ secrets.VG_DBT_UTILS_APP_ID }}
+          private-key: ${{ secrets.VG_DBT_UTILS_APP_PRIVATE_KEY }}
+
+      - name: Run dbt doc generate
+        run: |
+          uv run dbt deps
+          uv run dbt docs generate
+
+      - name: Package and upload generated dbt docs
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./target
+
+      - name: Publish to GitHub Pages
+        id: deploy-pages
+        uses: actions/deploy-pages@v4

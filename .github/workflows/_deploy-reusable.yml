@@ -1,0 +1,89 @@
+name: _deploy (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment (e.g., dev|tst|prd)"
+        required: true
+        type: string
+      ref:
+        description: "Ref to deploy (tag name or full SHA)"
+        required: true
+        type: string
+      is_tag:
+        description: "Treat 'ref' as a tag name (prefix with refs/tags/ for checkout)"
+        required: false
+        type: boolean
+        default: false
+      production:
+        description: "Mark this as a production deployment (informational flag for your steps)"
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      result:
+        description: "Outcome of the deploy job"
+        value: ${{ jobs.deploy.outputs.result }}
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.ref }} → ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+
+    # ✅ Single environment reference = single canonical deployment record
+    #    You can set URL statically or from a step output (recommended below).
+    environment:
+      name: ${{ inputs.environment }}
+
+    env:
+      # Environment-scoped configuration (set these in Settings → Environments)
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      BUNDLE_VAR_budget_policy_id: ${{ vars.BUNDLE_VAR_BUDGET_POLICY_ID }}
+      BUNDLE_VAR_warehouse_name: ${{ vars.BUNDLE_VAR_WAREHOUSE_NAME }}
+
+    outputs:
+      result: ${{ steps.set_result.outputs.result }}
+
+    steps:
+      - name: Checkout at requested ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.is_tag && format('refs/tags/{0}', inputs.ref) || inputs.ref }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+          clean: true
+
+      - name: Resolve commit SHA & show context
+        id: rev
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA=$(git rev-parse --verify HEAD)
+          echo "commit_sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Resolved to commit: $SHA"
+          echo "Nearest tag: $(git describe --tags --always --dirty || true)"
+          echo "Commit message:"; git log -1 --pretty=oneline --decorate
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+        with:
+          version: "0.287.0"
+
+      - name: Deploy Bundle (Databricks)
+        id: run_deploy
+        run: |
+          set -euo pipefail
+          databricks bundle deploy --target "${{ inputs.environment }}"
+
+      # Emit result for callers
+      - name: Set result (success)
+        id: set_result
+        if: success()
+        run: echo "result=success" >> "$GITHUB_OUTPUT"
+
+      - name: Set result (failure)
+        if: failure()
+        run: echo "result=failure" >> "$GITHUB_OUTPUT"

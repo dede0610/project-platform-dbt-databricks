@@ -1,0 +1,46 @@
+version: 2
+
+anchors:
+  - &sat_src_pk
+      name: src_pk                    # Must be overwritten by merge
+      data_type: binary
+      constraints:                    # Must be overwritten by merge
+        - type: not_null
+        - type: foreign_key           # Must be overwritten by merge
+          to: relation                # Must be overwritten by merge
+          to_columns: list_of_columns # Must be overwritten by merge
+          warn_unenforced: false
+      data_tests:                     # Must be overwritten by merge
+        - relationships:              # Must be overwritten by merge
+            arguments:                # Must be overwritten by merge
+              to: relation            # Must be overwritten by merge
+              field: column           # Must be overwritten by merge
+
+  - &sat_src_hashdiff
+      name: src_hashdiff              # Must be overwritten by merge
+      data_type: binary
+      constraints:
+        - type: not_null
+
+  - &sat_src_eff
+      name: effective_from
+      description: "Effective date of record"
+      data_type: date
+      constraints:
+        - type: not_null
+
+  - &sat_src_ldts
+      name: load_date
+      description: "Date record was loaded"
+      data_type: date
+      constraints:
+        - type: not_null
+
+  - &sat_src_source
+      name: record_source
+      description: "Record source label"
+      data_type: string
+      constraints:
+        - type: not_null
+
+models:

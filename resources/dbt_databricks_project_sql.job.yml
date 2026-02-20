@@ -1,0 +1,32 @@
+resources:
+  jobs:
+    dbt_databricks_project_job:
+      name: dbt_databricks_project_job
+
+      tasks:
+        - task_key: dbt_databricks_project_dbt_build
+          environment_key: default
+          dbt_task:
+            project_directory: ../
+            commands:
+              - 'dbt deps'
+              - 'dbt build --select dbt_databricks_project --exclude-resource-type unit_test'
+            catalog: ${var.catalog}
+            schema: ${var.schema}
+            warehouse_id: ${var.warehouse_id}
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "4"
+            dependencies:
+              - dbt-databricks>=1.11.0,<1.12.0
+
+      # The Databricks CLI currently requires the actual UUID of the budget policy.
+      # A GitHub issue has been opened to support lookup by name.
+      # See: https://github.com/databricks/cli/issues/4145
+      #
+      # Once that is supported, this should be changed to use the lookup syntax.
+      budget_policy_id: ${var.budget_policy_id}
+
+      # Extend the definition of the job here e.g. add scheduling with trigger attribute
