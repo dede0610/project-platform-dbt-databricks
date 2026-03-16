@@ -234,7 +234,7 @@ jobs:
       # 4) Post (upsert) the PR comment
       - name: Comment on PR with deployment details
         if: ${{ steps.find-pr.outputs.number != '' }}
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v3
         with:
           issue: ${{ steps.find-pr.outputs.number }}
           message: ${{ steps.build_body.outputs.result }}
