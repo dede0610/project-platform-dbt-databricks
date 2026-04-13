@@ -120,7 +120,7 @@ jobs:
       # Build a Markdown report from the JSONL
       - name: Build PR comment body
         id: build_comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           result-encoding: string
           script: |
@@ -224,7 +224,7 @@ jobs:
       # Create or update a PR comment
       - name: Comment on PR with dbt‑autofix results
         if: ${{ github.event_name == 'pull_request' }}
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v3
         with:
           message: ${{ steps.build_comment.outputs.result }}
           # Use a stable ID so subsequent runs update the same comment
