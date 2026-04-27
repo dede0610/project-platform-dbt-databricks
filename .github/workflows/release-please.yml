@@ -20,7 +20,7 @@ jobs:
       tag_name: ${{ steps.release.outputs.tag_name }}
       sha: ${{ steps.release.outputs.sha }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -103,7 +103,7 @@ jobs:
 
       - name: Find PR(s) for commit
         id: prs-for-commit
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           SHA: ${{ needs.release-please.outputs.sha }}
         with:
@@ -157,7 +157,7 @@ jobs:
       # Decide which context to use and compute the target SHA for PR lookup
       - name: Select deployment context & ref
         id: ctx
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           result-encoding: string
           script: |
@@ -196,7 +196,7 @@ jobs:
       - name: Build deployment comment body
         id: build_body
         if: ${{ steps.find-pr.outputs.number != '' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           result-encoding: string
           script: |
@@ -234,7 +234,7 @@ jobs:
       # 4) Post (upsert) the PR comment
       - name: Comment on PR with deployment details
         if: ${{ steps.find-pr.outputs.number != '' }}
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v3
         with:
           issue: ${{ steps.find-pr.outputs.number }}
           message: ${{ steps.build_body.outputs.result }}
@@ -286,10 +286,10 @@ jobs:
           uv run dbt docs generate
 
       - name: Package and upload generated dbt docs
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./target
 
       - name: Publish to GitHub Pages
         id: deploy-pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
