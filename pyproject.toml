@@ -18,12 +18,12 @@ dependencies = [
 
 [dependency-groups]  # https://docs.astral.sh/uv/concepts/projects/dependencies/#development-dependencies
 dev = [
-  "commitizen>=4.3.0,<5.0.0",
+  "commitizen>=4.13.10,<5.0.0",
   "databricks-connect>=17.0.0, <18.0.0",
-  "dbt-autofix>=0.18.6,<0.21.0",
+  "dbt-autofix>=0.20.4,<0.21.0",
   "pip-system-certs==5.3",
-  "pre-commit>=4.5.0, <5.0.0",
-  "ruff>=0.14.0, <1.0.0",
+  "pre-commit>=4.6.0,<5.0.0",
+  "ruff>=0.15.12,<1.0.0",
   "shandy-sqlfmt[jinjafmt]>=0.28.0, <1.0.0",
   "sqlfluff[rs]>=4.0.0, <4.1.0",
   "sqlfluff-templater-dbt>=4.0.0, <4.1.0",
