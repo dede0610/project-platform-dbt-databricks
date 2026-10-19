@@ -20,8 +20,6 @@ variables:
     description: The name of the warehouse to use
   warehouse_id:
     description: The warehouse to use
-  budget_policy_id:
-    description: The serverless budget policy to use
 
 targets:
   local:
@@ -43,7 +41,6 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
-      budget_policy_id: "04d2f822-2265-4000-bdda-c4d7817b7259"
 
   dev:
     # Environment variables set in GitHub Actions
@@ -58,7 +55,6 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
-      budget_policy_id: "04d2f822-2265-4000-bdda-c4d7817b7259"
 
   tst:
     # Environment variables set in GitHub Actions
@@ -73,7 +69,6 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
-      budget_policy_id: "04d2f822-2265-4000-bdda-c4d7817b7259"
 
   prd:
     # Environment variables set in GitHub Actions
@@ -88,4 +83,3 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
-      budget_policy_id: "04d2f822-2265-4000-bdda-c4d7817b7259"
