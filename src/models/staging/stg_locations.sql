@@ -1,31 +1,26 @@
 with
 
-source as (
+    source as (select * from {{ source("ecom", "raw_stores") }}),
 
-    -- {# This references seed (CSV) data - try switching to
-    {{ source('ecom', 'raw_stores') }} #}
-    select * from {{ ref('raw_stores') }}
+    renamed as (
 
-),
+        select
 
-renamed as (
+            -- --------  ids
+            id as location_id,
 
-    select
+            -- -------- text
+            name as location_name,
 
-        ----------  ids
-        id as location_id,
+            -- -------- numerics
+            tax_rate,
 
-        ---------- text
-        name as location_name,
+            -- -------- timestamps
+            cast(opened_at as date) as opened_date
 
-        ---------- numerics
-        tax_rate,
+        from source
 
-        ---------- timestamps
-        cast(opened_at as date) as opened_date
+    )
 
-    from source
-
-)
-
-select * from renamed
+select *
+from renamed

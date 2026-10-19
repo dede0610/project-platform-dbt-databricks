@@ -1,79 +1,59 @@
 with
 
-orders as (
+    orders as (select * from {{ ref("stg_orders") }}),
 
-    select * from {{ ref('stg_orders') }}
+    order_items as (select * from {{ ref("order_items") }}),
 
-),
+    order_items_summary as (
 
-order_items as (
+        select
+            order_id,
 
-    select * from {{ ref('order_items') }}
+            sum(supply_cost) as order_cost,
+            sum(product_price) as order_items_subtotal,
+            count(order_item_id) as count_order_items,
 
-),
+            -- Try switching these from 'sum' to 'count' and then run 'dbt test'
+            sum(case when is_food_item then 1 else 0 end) as count_food_items,
+            sum(case when is_drink_item then 1 else 0 end) as count_drink_items
 
-order_items_summary as (
+        from order_items
 
-    select
-        order_id,
+        group by 1
 
-        sum(supply_cost) as order_cost,
-        sum(product_price) as order_items_subtotal,
-        count(order_item_id) as count_order_items,
+    ),
 
-        -- Try switching these from 'sum' to 'count' and then run 'dbt test'
-        sum(
-            case
-                when is_food_item then 1
-                else 0
-            end
-        ) as count_food_items,
-        sum(
-            case
-                when is_drink_item then 1
-                else 0
-            end
-        ) as count_drink_items
+    compute_booleans as (
 
-    from order_items
+        select
+            orders.*,
 
-    group by 1
+            order_items_summary.order_cost,
+            order_items_summary.order_items_subtotal,
+            order_items_summary.count_food_items,
+            order_items_summary.count_drink_items,
+            order_items_summary.count_order_items,
+            order_items_summary.count_food_items > 0 as is_food_order,
+            order_items_summary.count_drink_items > 0 as is_drink_order
 
-),
+        from orders
 
-compute_booleans as (
+        left join order_items_summary on orders.order_id = order_items_summary.order_id
 
-    select
-        orders.*,
+    ),
 
-        order_items_summary.order_cost,
-        order_items_summary.order_items_subtotal,
-        order_items_summary.count_food_items,
-        order_items_summary.count_drink_items,
-        order_items_summary.count_order_items,
-        order_items_summary.count_food_items > 0 as is_food_order,
-        order_items_summary.count_drink_items > 0 as is_drink_order
+    customer_order_count as (
 
-    from orders
+        select
+            *,
 
-    left join
-        order_items_summary
-        on orders.order_id = order_items_summary.order_id
+            row_number() over (
+                partition by customer_id order by order_date asc
+            ) as customer_order_number
 
-),
+        from compute_booleans
 
-customer_order_count as (
+    )
 
-    select
-        *,
-
-        row_number() over (
-            partition by customer_id
-            order by order_date asc
-        ) as customer_order_number
-
-    from compute_booleans
-
-)
-
-select * from customer_order_count
+select *
+from customer_order_count

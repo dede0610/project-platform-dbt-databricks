@@ -1,34 +1,29 @@
 with
 
-source as (
+    source as (select * from {{ source("ecom", "raw_supplies") }}),
 
-    -- {# This references seed (CSV) data - try switching to
-    {{ source('ecom', 'raw_supplies') }} #}
-    select * from {{ ref('raw_supplies') }}
+    renamed as (
 
-),
+        select
 
-renamed as (
+            -- --------  ids
+            -- md5(concat(id, '|', sku)) as supply_uuid,
+            {{ dbt_utils.generate_surrogate_key(["id", "sku"]) }} as supply_uuid,
+            id as supply_id,
+            sku as product_id,
 
-    select
+            -- -------- text
+            name as supply_name,
 
-        ----------  ids
-        --md5(concat(id, '|', sku)) as supply_uuid,
-        {{ dbt_utils.generate_surrogate_key(['id', 'sku']) }} as supply_uuid,
-        id as supply_id,
-        sku as product_id,
+            -- -------- numerics
+            {{ cents_to_dollars("cost") }} as supply_cost,
 
-        ---------- text
-        name as supply_name,
+            -- -------- booleans
+            perishable as is_perishable_supply
 
-        ---------- numerics
-        {{ cents_to_dollars('cost') }} as supply_cost,
+        from source
 
-        ---------- booleans
-        perishable as is_perishable_supply
+    )
 
-    from source
-
-)
-
-select * from renamed
+select *
+from renamed

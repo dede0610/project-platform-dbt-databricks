@@ -1,25 +1,20 @@
 with
 
-source as (
+    source as (select * from {{ source("ecom", "raw_customers") }}),
 
-    -- {# This references seed (CSV) data - try switching to
-    {{ source('ecom', 'raw_customers') }} #}
-    select * from {{ ref('raw_customers') }}
+    renamed as (
 
-),
+        select
 
-renamed as (
+            -- --------  ids
+            id as customer_id,
 
-    select
+            -- -------- text
+            name as customer_name
 
-        ----------  ids
-        id as customer_id,
+        from source
 
-        ---------- text
-        name as customer_name
+    )
 
-    from source
-
-)
-
-select * from renamed
+select *
+from renamed

@@ -1,35 +1,30 @@
 with
 
-source as (
+    source as (select * from {{ source("ecom", "raw_products") }}),
 
-    -- {# This references seed (CSV) data - try switching to
-    {{ source('ecom', 'raw_products') }} #}
-    select * from {{ ref('raw_products') }}
+    renamed as (
 
-),
+        select
 
-renamed as (
+            -- ids
+            sku as product_id,
 
-    select
+            -- text
+            name as product_name,
+            type as product_type,
+            description as product_description,
 
-        --ids
-        sku as product_id,
+            -- numerics
+            {{ cents_to_dollars("price") }} as product_price,
 
-        --text
-        name as product_name,
-        type as product_type,
-        description as product_description,
+            -- booleans
+            coalesce(type = 'jaffle', false) as is_food_item,
 
-        --numerics
-        {{ cents_to_dollars('price') }} as product_price,
+            coalesce(type = 'beverage', false) as is_drink_item
 
-        --booleans
-        coalesce(type = 'jaffle', false) as is_food_item,
+        from source
 
-        coalesce(type = 'beverage', false) as is_drink_item
+    )
 
-    from source
-
-)
-
-select * from renamed
+select *
+from renamed
