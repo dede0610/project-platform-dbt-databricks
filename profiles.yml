@@ -11,6 +11,15 @@ dbt_databricks_project:
       token: "{{ env_var('DATABRICKS_TOKEN') }}"
       type: databricks
 
+    tst:
+      catalog: tst_dbt
+      host: dbc-4bf4b6b9-385d.cloud.databricks.com
+      http_path: /sql/1.0/warehouses/147aa610b0179c78
+      schema: default
+      threads: 4
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      type: databricks
+
     prd:
       catalog: prd_dbt
       host: dbc-4bf4b6b9-385d.cloud.databricks.com
