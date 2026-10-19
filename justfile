@@ -25,16 +25,6 @@ auth:
 build:
   dbt build -s dbt_databricks_project
 
-
-# (databricks) DAB validate
-db-validate:
-  databricks bundle validate
-
-# (databricks) DAB deploy
-db-deploy:
-  databricks bundle deploy
-
-
 # (git) Initialize environment after clone
 clone:
   uv venv
