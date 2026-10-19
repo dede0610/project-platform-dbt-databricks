@@ -1,4 +1,0 @@
-groups:
-  - name: dbt_databricks_project
-    owner:
-      email: alisdair.smyth@gmail.com

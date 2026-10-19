@@ -59,8 +59,6 @@ models:
     staging:
       +schema: dbt_artifacts_staging
   dbt_databricks_project:
-    # ref: https://docs.getdbt.com/reference/resource-configs/group
-    +group: dbt_databricks_project
     # ref: https://docs.getdbt.com/reference/resource-configs/access
     +access: public
     # ref: https://docs.getdbt.com/reference/resource-configs/persist_docs
@@ -68,38 +66,14 @@ models:
       relation: true
       columns: true
 
-    raw_vault:
-      +materialized: incremental
-      +tags:
-        - 'raw_vault'
-      hubs:
-        +tags:
-          - 'hub'
-        # Enforce data contract checks for Raw Vault Hubs
-        +on_schema_change: fail
-        +contract:
-          enforced: true
-      links:
-        +tags:
-          - 'link'
-        # Enforce data contract checks for Raw Vault Links
-        +on_schema_change: fail
-        +contract:
-          enforced: true
-      sats:
-        +tags:
-          - 'satellite'
-
-    stage:
-      +schema: private
+    # Materialize staging models as views, and marts as tables
+    marts:
+      +schema: curated
+      +materialized: table
+    staging:
+      +schema: stg
       +materialized: view
-      +tags:
-        - 'stage'
-      +contract:
-        enforced: true
 
-on-run-start:
-  - "{{ vg_dbt_utils.log_project_version() }}"
-
-on-run-end:
-  - "{{ dbt_artifacts.upload_results(results) }}"
+seeds:
+  dbt_databricks_project:
+    +schema: raw

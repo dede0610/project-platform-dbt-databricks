@@ -1,4 +1,6 @@
 dbt_databricks_project:
+  target: dev
+
   outputs:
     dev:
       catalog: dev_dbt
@@ -6,6 +8,14 @@ dbt_databricks_project:
       http_path: /sql/1.0/warehouses/147aa610b0179c78
       schema: default
       threads: 4
-      token: dapif5f180117f923f52ce66685d582993dd
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
       type: databricks
-  target: dev
+
+    prd:
+      catalog: prd_dbt
+      host: dbc-4bf4b6b9-385d.cloud.databricks.com
+      http_path: /sql/1.0/warehouses/147aa610b0179c78
+      schema: default
+      threads: 4
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      type: databricks
