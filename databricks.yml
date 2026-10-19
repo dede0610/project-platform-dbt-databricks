@@ -33,7 +33,7 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://dbc-97f40495-e782.cloud.databricks.com/
+      host: https://dbc-4bf4b6b9-385d.cloud.databricks.com/
     variables:
       catalog: dev_dbt
       # Each engineer has their own set of schema
