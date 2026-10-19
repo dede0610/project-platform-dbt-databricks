@@ -122,9 +122,6 @@ sync:
 update:
   uvx copier update --skip-answered
 
-# (databricks) Update databricks CLI to the latest version (usage: just update-databricks-cli)
-update-databricks-cli:
-  winget upgrade Databricks.DatabricksCLI --version 0.287.0
 
 # (databricks) Validate the Databricks Asset Bundle
 validate:

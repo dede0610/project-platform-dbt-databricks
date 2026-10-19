@@ -2,7 +2,7 @@
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 bundle:
   name: dbt_databricks_project
-  databricks_cli_version: ">=0.287.0"
+  databricks_cli_version: ">=1.21.0"
 
 include:
   - resources/*.yml
