@@ -20,6 +20,7 @@ __pycache__/
 *.py[cdo]
 .venv/
 dist/
+.env
 
 # Ruff
 .ruff_cache/
