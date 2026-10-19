@@ -52,12 +52,6 @@ vars:
 
 
 models:
-  dbt_artifacts:
-    +schema: dbt_artifacts
-    sources:
-      +schema: dbt_artifacts_sources
-    staging:
-      +schema: dbt_artifacts_staging
   dbt_databricks_project:
     # ref: https://docs.getdbt.com/reference/resource-configs/access
     +access: public
