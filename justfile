@@ -1,5 +1,5 @@
-# use PowerShell instead of sh:
-set shell := ["powershell.exe", "-c"]
+# use sh instead of PowerShell:
+set shell := ["bash", "-c"]
 
 # List available just commands (default)
 default:
