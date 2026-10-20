@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/dede0610/vg-data-hub-dbt-databricks/compare/v0.1.0...v0.1.1) (2026-10-20)
+
+
+### ⚙️ Maintenance
+
+* update target catalogs ([#21](https://github.com/dede0610/vg-data-hub-dbt-databricks/issues/21)) ([aa6c2ed](https://github.com/dede0610/vg-data-hub-dbt-databricks/commit/aa6c2ed5e00340df98807d9605c4c53697c1d75c))
+
 ## [0.1.0](https://github.com/dede0610/vg-data-hub-dbt-databricks/compare/v0.0.1...v0.1.0) (2026-10-20)
 
 
