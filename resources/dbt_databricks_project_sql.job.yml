@@ -11,7 +11,7 @@ resources:
             commands:
               - 'dbt deps'
               - 'dbt seed'
-              - 'dbt build --select dbt_databricks_project --exclude-resource-type unit_test'
+              - 'dbt build --select dbt_databricks_project --exclude-resource-type unit_test seed'
             catalog: ${var.catalog}
             schema: ${var.schema}
             warehouse_id: ${var.warehouse_id}
