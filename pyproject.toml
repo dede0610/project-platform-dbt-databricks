@@ -21,7 +21,7 @@ dependencies = [
 dev = [
   "commitizen>=4.3.0,<5.0.0",
   "pip-system-certs==5.3",
-  "pre-commit>=4.5.0, <5.0.0",
+  "prek>=0.5.6, <1.0.0",
   "ruff>=0.14.0, <1.0.0",
   "shandy-sqlfmt[jinjafmt]>=0.28.0, <1.0.0",
   "sqlfluff[rs]>=4.0.0, <4.1.0",
