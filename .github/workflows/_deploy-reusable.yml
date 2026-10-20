@@ -69,7 +69,7 @@ jobs:
       - name: Install Databricks CLI
         uses: databricks/setup-cli@main
         with:
-          version: "0.287.0"
+          version: "1.21.0"
 
       - name: Deploy Bundle (Databricks)
         id: run_deploy
