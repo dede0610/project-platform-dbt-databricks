@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.2.0...v0.3.0) (2026-10-20)
+
+
+### 🚀 New Features
+
+* **bundle:** add environment tags and local schedule ([f0e7acd](https://github.com/dede0610/project-platform-dbt-databricks/commit/f0e7acdb3af0f37887032a2c4f97a61d6b3fe2cc))
+* configure target service principal permissions ([#27](https://github.com/dede0610/project-platform-dbt-databricks/issues/27)) ([739436a](https://github.com/dede0610/project-platform-dbt-databricks/commit/739436a33eceb58bd3429d6a0a1e817b29cd3f8c))
+
+
+### 🐛 Bug Fixes
+
+* **bundle:** set Databricks job run identity ([c60979f](https://github.com/dede0610/project-platform-dbt-databricks/commit/c60979f126b688cfadac87fe3c5a71000f1bd9b1))
+* include seeds in dbt build selection ([babd0e0](https://github.com/dede0610/project-platform-dbt-databricks/commit/babd0e0e56ff8376b5739ba3be111385b52cb038))
+* select Databricks OAuth M2M authentication ([cf57f51](https://github.com/dede0610/project-platform-dbt-databricks/commit/cf57f51beef78d8615c86d3c1858052311d37366))
+* use service principal IDs for job permissions ([7d904d0](https://github.com/dede0610/project-platform-dbt-databricks/commit/7d904d0a506ec3e8bfd013cd576730f5e468f5e4))
+
 ## [0.2.0](https://github.com/dede0610/vg-data-hub-dbt-databricks/compare/v0.1.1...v0.2.0) (2026-10-20)
 
 
