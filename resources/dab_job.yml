@@ -3,6 +3,10 @@ resources:
     dbt_databricks_project_job:
       name: dbt_databricks_project_job
 
+      permissions:
+        - service_principal_name: ${var.service_principal_name}
+          level: CAN_MANAGE_RUN
+
       tasks:
         - task_key: dbt_databricks_project_dbt_build
           environment_key: default

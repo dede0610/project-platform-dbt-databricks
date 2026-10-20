@@ -25,6 +25,8 @@ variables:
     description: The name of the warehouse to use
   warehouse_id:
     description: The warehouse to use
+  service_principal_name:
+    description: Service principal used by CI/CD
 
 targets:
   local:
@@ -56,6 +58,7 @@ targets:
       catalog: dev_dbt
       data_product_schema: default
       schema: default
+      service_principal_name: dev_dbt_sp
       warehouse_name: "Serverless Starter Warehouse"
       warehouse_id:
         lookup:
@@ -70,6 +73,7 @@ targets:
       catalog: tst_dbt
       data_product_schema: default
       schema: default
+      service_principal_name: tst_dbt_sp
       warehouse_name: "Serverless Starter Warehouse"
       warehouse_id:
         lookup:
@@ -84,6 +88,7 @@ targets:
       catalog: prd_dbt
       data_product_schema: default
       schema: default
+      service_principal_name: prd_dbt_sp
       warehouse_name: "Serverless Starter Warehouse"
       warehouse_id:
         lookup:
