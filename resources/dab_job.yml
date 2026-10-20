@@ -2,12 +2,8 @@ resources:
   jobs:
     dbt_databricks_project_job:
       name: dbt_databricks_project_job
-      run_as:
-        service_principal_name: ${var.service_principal_id}
-
-      permissions:
-        - service_principal_name: ${var.service_principal_id}
-          level: CAN_MANAGE_RUN
+      tags:
+        environment: ${bundle.target}
 
       tasks:
         - task_key: dbt_databricks_project_dbt_build

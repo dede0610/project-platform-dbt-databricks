@@ -27,6 +27,7 @@ variables:
     description: The warehouse to use
   service_principal_id:
     description: Service principal used by CI/CD
+    default: ""
 
 targets:
   local:
@@ -48,6 +49,12 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
+    resources:
+      jobs:
+        dbt_databricks_project_job:
+          schedule:
+            quartz_cron_expression: "0 0 11 * * ?"
+            timezone_id: Australia/Melbourne
 
   dev:
     # Environment variables set in GitHub Actions
@@ -63,6 +70,14 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
+    resources:
+      jobs:
+        dbt_databricks_project_job:
+          run_as:
+            service_principal_name: ${var.service_principal_id}
+          permissions:
+            - service_principal_name: ${var.service_principal_id}
+              level: CAN_MANAGE_RUN
 
   tst:
     # Environment variables set in GitHub Actions
@@ -78,6 +93,14 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
+    resources:
+      jobs:
+        dbt_databricks_project_job:
+          run_as:
+            service_principal_name: ${var.service_principal_id}
+          permissions:
+            - service_principal_name: ${var.service_principal_id}
+              level: CAN_MANAGE_RUN
 
   prd:
     # Environment variables set in GitHub Actions
@@ -93,3 +116,11 @@ targets:
       warehouse_id:
         lookup:
           warehouse: ${var.warehouse_name}
+    resources:
+      jobs:
+        dbt_databricks_project_job:
+          run_as:
+            service_principal_name: ${var.service_principal_id}
+          permissions:
+            - service_principal_name: ${var.service_principal_id}
+              level: CAN_MANAGE_RUN
