@@ -39,7 +39,8 @@ jobs:
     env:
       # Environment-scoped configuration (set these in Settings → Environments)
       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       BUNDLE_VAR_warehouse_name: ${{ vars.BUNDLE_VAR_WAREHOUSE_NAME }}
 
     outputs:
