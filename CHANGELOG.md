@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/dede0610/vg-data-hub-dbt-databricks/compare/v0.1.1...v0.2.0) (2026-10-20)
+
+
+### 🚀 New Features
+
+* seed dbt data before build ([#23](https://github.com/dede0610/vg-data-hub-dbt-databricks/issues/23)) ([60985f2](https://github.com/dede0610/vg-data-hub-dbt-databricks/commit/60985f2e62b003665b234029e33b66d040616217))
+
 ## [0.1.1](https://github.com/dede0610/vg-data-hub-dbt-databricks/compare/v0.1.0...v0.1.1) (2026-10-20)
 
 
