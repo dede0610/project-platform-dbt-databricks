@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]  # https://packaging.python.org/en/latest/specifications/pyproject-toml/
 name = "dbt-databricks-project"
-version = "0.1.0" # x-release-please-version
+version = "0.1.1" # x-release-please-version
 description = "Data Product: dbt_databricks_project"
 readme = "README.md"
 requires-python = "==3.12.*"
