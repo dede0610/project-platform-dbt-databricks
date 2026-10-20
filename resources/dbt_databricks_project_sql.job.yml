@@ -10,6 +10,7 @@ resources:
             project_directory: ../src
             commands:
               - 'dbt deps'
+              - 'dbt seed'
               - 'dbt build --select dbt_databricks_project --exclude-resource-type unit_test'
             catalog: ${var.catalog}
             schema: ${var.schema}
