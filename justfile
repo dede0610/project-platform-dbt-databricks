@@ -5,10 +5,6 @@ set shell := ["bash", "-c"]
 default:
   @just --list
 
-# Activate the virtual environment
-activate:
-  source .venv/bin/activate
-
 # (git) Stage all changes
 add:
   git add .
