@@ -7,7 +7,7 @@ resources:
         - task_key: dbt_databricks_project_dbt_build
           environment_key: default
           dbt_task:
-            project_directory: ../
+            project_directory: ../src
             commands:
               - 'dbt deps'
               - 'dbt build --select dbt_databricks_project --exclude-resource-type unit_test'
@@ -20,4 +20,4 @@ resources:
           spec:
             environment_version: "4"
             dependencies:
-              - dbt-databricks>=1.11.0,<1.12.0
+              - dbt-databricks>=1.12.0,<1.13.0

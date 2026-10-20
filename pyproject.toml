@@ -9,7 +9,7 @@ description = "Data Product: dbt_databricks_project"
 readme = "README.md"
 requires-python = "==3.12.*"
 dependencies = [
-  "dbt-databricks>=1.11.0,<1.12.8",
+  "dbt-databricks>=1.12.0,<1.13.0",
 ]
 
 [project.urls]  # https://packaging.python.org/en/latest/specifications/well-known-project-urls/#well-known-labels
