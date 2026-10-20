@@ -52,7 +52,7 @@ targets:
     workspace:
       root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
     variables:
-      catalog: prd_dbt
+      catalog: dev_dbt
       data_product_schema: default
       schema: default
       warehouse_name: "Serverless Starter Warehouse"
@@ -66,7 +66,7 @@ targets:
     workspace:
       root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
     variables:
-      catalog: prd_dbt
+      catalog: tst_dbt
       data_product_schema: default
       schema: default
       warehouse_name: "Serverless Starter Warehouse"
