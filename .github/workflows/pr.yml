@@ -62,19 +62,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Number of  files per pre-commit invocation
+          # Number of files per prek invocation
           BATCH_SIZE=200
 
-          # Function to run a pre-commit hook over the NUL-delimited files in batches
+          # Function to run a hook over the NUL-delimited files in batches
           run_hook() {
             local hook="$1"
-            echo "=== Running pre-commit hook: ${hook} ==="
+            echo "=== Running prek hook: ${hook} ==="
             # -0: NUL-delimited input
             # -a files.nul: read from file
             # -r: do nothing if input is empty
             # -n $BATCH_SIZE: pass up to N files per invocation to avoid ARG_MAX issues
             xargs -0 -a "$FILES_NUL" -r -n "$BATCH_SIZE" \
-              uv run pre-commit run "$hook" --files
+              uv run prek run "$hook" --files
           }
 
           run_hook "check-yaml"
