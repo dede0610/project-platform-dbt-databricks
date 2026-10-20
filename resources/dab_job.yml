@@ -4,7 +4,7 @@ resources:
       name: dbt_databricks_project_job
 
       permissions:
-        - service_principal_name: ${var.service_principal_name}
+        - service_principal_name: ${var.service_principal_id}
           level: CAN_MANAGE_RUN
 
       tasks:
