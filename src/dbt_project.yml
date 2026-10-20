@@ -7,17 +7,17 @@ profile: dbt_databricks_project
 # For Databricks asset bundles, we put everything in src, as you may have
 # non-dbt resources in your project.
 model-paths:
-  - src/models
+  - models
 analysis-paths:
-  - src/analyses
+  - analyses
 test-paths:
-  - src/tests
+  - tests
 seed-paths:
-  - src/seeds
+  - seeds
 macro-paths:
-  - src/macros
+  - macros
 snapshot-paths:
-  - src/snapshots
+  - snapshots
 
 flags:
   # ref: https://docs.getdbt.com/reference/global-configs/behavior-changes#package-override-for-built-in-materialization

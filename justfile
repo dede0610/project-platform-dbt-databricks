@@ -7,7 +7,7 @@ default:
 
 # Activate the virtual environment
 activate:
-  .venv\Scripts\Activate.ps1
+  source .venv/bin/activate
 
 # (git) Stage all changes
 add:

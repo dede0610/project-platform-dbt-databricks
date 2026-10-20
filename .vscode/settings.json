@@ -34,4 +34,9 @@
         "*.yml": "jinja-yaml"
     },
     "python-envs.defaultEnvManager": "ms-python.python:system",
+
+    "terminal.integrated.env.linux": {
+        "DBT_PROJECT_DIR": "${workspaceFolder}/src",
+        "DBT_PROFILES_DIR": "${workspaceFolder}/.dbt"
+    }
 }
