@@ -1,0 +1,70 @@
+{
+  "name": "platform-dbt-databricks",
+  "image": "ghcr.io/astral-sh/uv:python3.12-trixie",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1.1.2": {},
+    "ghcr.io/devcontainers-extra/features/apt-get-packages:1.0.8": {
+      "packages": "just,starship"
+    }
+  },
+  "onCreateCommand": "grep -qxF 'eval \"$(starship init bash)\"' ~/.bashrc || echo 'eval \"$(starship init bash)\"' >> ~/.bashrc; grep -qxF 'export PATH=\"$HOME/.local/bin:$PATH\"' ~/.bashrc || echo 'export PATH=\"$HOME/.local/bin:$PATH\"' >> ~/.bashrc",
+  "postCreateCommand": "curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v1.21.0/install.sh | sh && uv sync --locked --group dev && curl -fsSL https://gh.io/copilot-install | bash",
+  "postStartCommand": "echo 'source .venv/bin/activate' >> ~/.bashrc",
+  "containerEnv": {
+    "DBT_PROJECT_DIR": "${containerWorkspaceFolder}/src",
+    "DBT_PROFILES_DIR": "${containerWorkspaceFolder}/.dbt",
+    "DATABRICKS_HOST": "${localEnv:DATABRICKS_HOST}",
+    "DATABRICKS_TOKEN": "${localEnv:DATABRICKS_TOKEN}"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "databricks.databricks",
+        "editorconfig.editorconfig",
+        "innoverio.vscode-dbt-power-user",
+        "dorzey.vscode-sqlfluff",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "python.testing.pytestArgs": [
+          "."
+        ],
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestEnabled": true,
+        "python.analysis.extraPaths": [
+          "src"
+        ],
+        "files.exclude": {
+          "**/*.egg-info": true,
+          "**/__pycache__": true,
+          ".pytest_cache": true
+        },
+        "python.envFile": "${workspaceFolder}/.databricks/.databricks.env",
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "[python]": {
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+          },
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "ruff.configurationPreference": "filesystemFirst",
+        "sqlfluff.executablePath": "${workspaceFolder}/.venv/bin/sqlfluff",
+        "sqlfluff.linter.run": "onSave",
+        "sqlfluff.experimental.format.executeInTerminal": true,
+        "editor.formatOnSave": false,
+        "files.associations": {
+          "*.sql": "jinja-sql",
+          "*.yml": "jinja-yaml"
+        }
+      }
+    }
+  }
+}

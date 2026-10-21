@@ -1,42 +1,5 @@
 {
-    "python.analysis.stubPath": ".vscode",
     "jupyter.interactiveWindow.cellMarker.codeRegex": "^# COMMAND ----------|^# Databricks notebook source|^(#\\s*%%|#\\s*\\<codecell\\>|#\\s*In\\[\\d*?\\]|#\\s*In\\[ \\])",
     "jupyter.interactiveWindow.cellMarker.default": "# COMMAND ----------",
-    "python.testing.pytestArgs": [
-        "."
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.analysis.extraPaths": ["src"],
-    "files.exclude": {
-        "**/*.egg-info": true,
-        "**/__pycache__": true,
-        ".pytest_cache": true,
-    },
-    "python.envFile": "${workspaceRoot}/.env",
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts",
-    "[python]": {
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit",
-            "source.organizeImports": "explicit"
-        },
-        "editor.defaultFormatter": "charliermarsh.ruff",
-    },
-    // Optional: prioritize project-level Ruff configuration files (pyproject.toml, ruff.toml)
-    "ruff.configurationPreference": "filesystemFirst",
-    "sqlfluff.executablePath": "${workspaceFolder}/.venv/Scripts/sqlfluff",
-    "sqlfluff.linter.run": "onSave",
-    "sqlfluff.experimental.format.executeInTerminal": true,
-    "editor.formatOnSave": false,
-    "files.associations": {
-        "*.sql": "jinja-sql",
-        "*.yml": "jinja-yaml"
-    },
-    "python-envs.defaultEnvManager": "ms-python.python:system",
-
-    "terminal.integrated.env.linux": {
-        "DBT_PROJECT_DIR": "${workspaceFolder}/src",
-        "DBT_PROFILES_DIR": "${workspaceFolder}/.dbt"
-    }
+    "python.envFile": "${workspaceRoot}/.env"
 }
