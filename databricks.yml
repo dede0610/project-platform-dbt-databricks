@@ -25,9 +25,10 @@ variables:
     description: The name of the warehouse to use
   warehouse_id:
     description: The warehouse to use
-  service_principal_id:
-    description: Service principal used by CI/CD; set via BUNDLE_VAR_service_principal_id in GitHub/Databricks deployment settings
-    default: ""
+  deployer_service_principal_id:
+    description: Service principal ID used by CI/CD to deploy the bundle
+  runner_service_principal_id:
+    description: Service principal ID used to run the deployed job
 
 targets:
   local:
@@ -73,9 +74,11 @@ targets:
       jobs:
         dbt_databricks_project_job:
           run_as:
-            service_principal_name: ${var.service_principal_id}
+            service_principal_name: ${var.runner_service_principal_id}
           permissions:
-            - service_principal_name: ${var.service_principal_id}
+            - service_principal_name: ${var.deployer_service_principal_id}
+              level: CAN_MANAGE
+            - service_principal_name: ${var.runner_service_principal_id}
               level: CAN_MANAGE_RUN
 
   tst:
@@ -95,9 +98,11 @@ targets:
       jobs:
         dbt_databricks_project_job:
           run_as:
-            service_principal_name: ${var.service_principal_id}
+            service_principal_name: ${var.runner_service_principal_id}
           permissions:
-            - service_principal_name: ${var.service_principal_id}
+            - service_principal_name: ${var.deployer_service_principal_id}
+              level: CAN_MANAGE
+            - service_principal_name: ${var.runner_service_principal_id}
               level: CAN_MANAGE_RUN
 
   prd:
@@ -117,7 +122,9 @@ targets:
       jobs:
         dbt_databricks_project_job:
           run_as:
-            service_principal_name: ${var.service_principal_id}
+            service_principal_name: ${var.runner_service_principal_id}
           permissions:
-            - service_principal_name: ${var.service_principal_id}
+            - service_principal_name: ${var.deployer_service_principal_id}
+              level: CAN_MANAGE
+            - service_principal_name: ${var.runner_service_principal_id}
               level: CAN_MANAGE_RUN
