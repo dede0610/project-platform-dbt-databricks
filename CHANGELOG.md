@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.1](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.3.0...v0.3.1) (2026-10-21)
+
+
+### ⚙️ Maintenance
+
+* **bundle:** externalise service principal ID ([a5e3dd3](https://github.com/dede0610/project-platform-dbt-databricks/commit/a5e3dd3bca7d16da355be8b792d620f024c28420))
+* **databricks:** rename service principal ID variables for clarity and update permissions ([2009b41](https://github.com/dede0610/project-platform-dbt-databricks/commit/2009b419692a97488d1ae0d6baaee6fcc35a8fbe))
+* **deploy:** update service principal ID to use correct secret ([0cea21f](https://github.com/dede0610/project-platform-dbt-databricks/commit/0cea21f54482fe1389bb76b60fd412a49821b60d))
+* **devcontainer:** configure Databricks devcontainer ([12b0ab7](https://github.com/dede0610/project-platform-dbt-databricks/commit/12b0ab711b2a6b72c1ff308932f7e4bb53bf8f2d))
+
+
+### 📚 Documentation
+
+* refresh project README ([aed53d8](https://github.com/dede0610/project-platform-dbt-databricks/commit/aed53d830240efa606cc411900c88ba31cf847a1))
+
 ## [0.3.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.2.0...v0.3.0) (2026-10-20)
 
 
