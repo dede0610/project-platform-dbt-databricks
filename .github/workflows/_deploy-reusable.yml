@@ -43,7 +43,7 @@ jobs:
       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
       DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       BUNDLE_VAR_warehouse_name: ${{ vars.BUNDLE_VAR_WAREHOUSE_NAME }}
-      BUNDLE_VAR_service_principal_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      BUNDLE_VAR_service_principal_id: ${{ secrets.DATABRICKS_CLIENT_ID_JOB }}
 
     outputs:
       result: ${{ steps.set_result.outputs.result }}
