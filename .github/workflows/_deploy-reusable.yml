@@ -94,6 +94,8 @@ jobs:
           APP_NAME: streamlit-app-${{ inputs.environment }}
         run: |
           set -euo pipefail
+          echo "Starting ${APP_NAME}"
+          databricks apps start "$APP_NAME"
           echo "Deploying ${APP_NAME}"
           databricks apps deploy "$APP_NAME"
 
