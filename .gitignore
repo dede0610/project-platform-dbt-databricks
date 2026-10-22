@@ -25,3 +25,6 @@ dist/
 # Ruff
 .ruff_cache/
 dbt_internal_packages/
+
+# VS Code
+.vscode/
