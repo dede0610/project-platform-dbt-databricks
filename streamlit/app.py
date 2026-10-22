@@ -6,8 +6,11 @@ from databricks import sql
 from databricks.sdk.core import Config
 
 st.set_page_config(page_title="Curated Data Browser", layout="wide")
-app_name = os.getenv("DATABRICKS_APP_NAME", "")
-st.title(app_name)
+app_name = os.getenv("DATABRICKS_APP_NAME", "streamlit-app-local")
+st.markdown(
+    f"<h1 style='color:#A80876;'>{app_name}</h1>",
+    unsafe_allow_html=True,
+)
 st.header("Browse curated customer data")
 
 app_name = os.getenv("DATABRICKS_APP_NAME", "")
