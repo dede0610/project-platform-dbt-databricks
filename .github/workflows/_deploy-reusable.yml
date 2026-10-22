@@ -79,7 +79,16 @@ jobs:
         id: run_deploy
         run: |
           set -euo pipefail
+          echo "Deploying bundle to ${{ inputs.environment }} environment"
           databricks bundle deploy --target "${{ inputs.environment }}"
+
+      - name: Deploy Streamlit app (Databricks)
+        env:
+          APP_NAME: streamlit-app-${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          echo "Deploying ${APP_NAME}"
+          databricks apps deploy "$APP_NAME"
 
       # Emit result for callers
       - name: Set result (success)
