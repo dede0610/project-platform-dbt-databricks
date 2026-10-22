@@ -79,7 +79,7 @@ jobs:
         id: validate_bundle
         run: |
           set -euo pipefail
-          echo "Validating bundle to ${{ inputs.environment }} environment"
+          echo "--> Validating bundle to ${{ inputs.environment }} environment"
           databricks bundle validate --target "${{ inputs.environment }}"
 
       - name: Deploy Bundle (Databricks)
@@ -94,7 +94,9 @@ jobs:
           APP_NAME: streamlit-app-${{ inputs.environment }}
         run: |
           set -euo pipefail
-          echo "Deploying ${APP_NAME}"
+          echo "--> Starting ${APP_NAME}"
+          databricks apps start "$APP_NAME"
+          echo "--> Deploying ${APP_NAME}"
           databricks apps deploy "$APP_NAME"
 
       # Emit result for callers
