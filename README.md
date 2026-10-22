@@ -1,21 +1,21 @@
-[![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)](https://www.python.org/downloads/windows/)
+[![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)](https://www.python.org/downloads/)
 ![Databricks](https://img.shields.io/badge/platform-Databricks-orange?logo=databricks)
 ![dbt Core](https://img.shields.io/badge/platform-dbt%20Core-orange)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 # project-platform-dbt-databricks
-> This project uses the dbt Jaffle Shop sample data to build a simple data product on Databricks (free edition). The primary goal is not the data model itself, but to demonstrate how modern analytics engineering practices can be implemented on the Databricks platform using dbt.
+> This project uses the dbt Jaffle Shop sample data to build a simple data product on Databricks Free Edition. The primary goal is not the data model itself, but to demonstrate how modern analytics engineering practices can be implemented on the Databricks platform using dbt.
 
 The project explores:
 
 - dbt development and deployment on Databricks
-- Databricks Asset Bundles for infrastructure and workload management
+- Databricks Asset Bundles for infrastructure and workload management (job & streamlit app)
 - Source control and deployment best practices
 - Pull request based development workflow
 - Automated release management with Release Please
 - CI/CD automation using GitHub Actions
-- Automated testing and deployment across environments
-- Service Principal authentication instead of personal credentials
+- Automated testing and deployment across environments (PR merge to main --> deploy to dev, release-please PR merged --> deploy to tst, deployment to prod is still manual)
+- Service Principal authentication instead of personal credentials (per environement: one sp deployer & one sp job runner)
 
 ## 🧪 Technologies
 - Python 3.12
@@ -56,8 +56,25 @@ The project explores:
 - Git-based development workflow
 
 ## Getting Started
-### 📦 Pre-requsites
-* [uv](https://docs.astral.sh/uv/) - `py -m pip install uv`
-* git
-* [Databricks CLI](https://github.com/databricks/cli)
-* Just - `uv tool install rust-just`
+### What you need
+
+#### Local development
+
+- Python 3.12
+- [uv](https://docs.astral.sh/uv/) for Python and project dependency management
+- Git
+- [Databricks CLI](https://github.com/databricks/cli)
+- [Just](https://github.com/casey/just), installable with `uv tool install rust-just`
+- A Databricks workspace with Unity Catalog access and a SQL warehouse
+
+#### GitHub Actions deployments
+
+Configure the following in each GitHub Actions environment (`dev`, `tst`, and `prd`):
+
+- **Environment variable** `DATABRICKS_HOST`: the workspace URL
+- **Environment variable** `BUNDLE_VAR_WAREHOUSE_NAME`: the SQL warehouse name
+- **Secret** `DATABRICKS_CLIENT_ID`: the deployer service principal's application/client ID
+- **Secret** `DATABRICKS_CLIENT_SECRET`: the deployer service principal's OAuth secret
+- **Secret** `DATABRICKS_CLIENT_ID_JOB`: the job runner service principal's application/client ID
+
+The deployer service principal needs permission to deploy the bundle and manage the deployed resources. The job runner service principal needs permission to run the dbt job and access the target catalog, schemas, and warehouse. Set up the required service principals and workspace permissions in Databricks; do not store their credentials in the repository.
