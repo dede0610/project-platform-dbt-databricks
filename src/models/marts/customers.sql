@@ -49,3 +49,4 @@ with
 
 select *
 from joined
+where customer_name like 'K%'
