@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.4.0...v0.5.0) (2026-10-22)
+
+
+### 🚀 New Features
+
+* **deploy:** specify source code path for Streamlit app deployment ([9f4d6e3](https://github.com/dede0610/project-platform-dbt-databricks/commit/9f4d6e3175d34f07f26ff4f75224264c453870b3))
+
 ## [0.4.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.3.1...v0.4.0) (2026-10-22)
 
 
