@@ -97,7 +97,7 @@ jobs:
           echo "--> Starting ${APP_NAME}"
           databricks apps start "$APP_NAME"
           echo "--> Deploying ${APP_NAME}"
-          databricks apps deploy "$APP_NAME"
+          databricks apps deploy "$APP_NAME" --source-code-path "/Workspace/Shared/.bundle/dbt_databricks_project/${{ inputs.environment }}/files/streamlit"
 
       # Emit result for callers
       - name: Set result (success)
