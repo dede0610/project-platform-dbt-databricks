@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.3.1...v0.4.0) (2026-10-22)
+
+
+### 🚀 New Features
+
+* **deploy:** add Streamlit app deployment step to reusable workflow ([c01bda2](https://github.com/dede0610/project-platform-dbt-databricks/commit/c01bda2071ebfa777929c021f13b45dd63f92b72))
+* **streamlit:** add curated customer KPI app ([#30](https://github.com/dede0610/project-platform-dbt-databricks/issues/30)) ([d75a98a](https://github.com/dede0610/project-platform-dbt-databricks/commit/d75a98a774e45f921094489855627b5b001b0ea3))
+* **validate:** add bundle validation step for Databricks in PR workflow ([66ac663](https://github.com/dede0610/project-platform-dbt-databricks/commit/66ac663cd6465efc726d71b9f7cacc727393e37d))
+
+
+### ⚙️ Maintenance
+
+* **gitignore:** add .vscode directory to .gitignore ([f1ab2f8](https://github.com/dede0610/project-platform-dbt-databricks/commit/f1ab2f8e4be3c74c08c04d23bb683787a71ee597))
+* **vscode:** remove settings.json file ([6ac47a8](https://github.com/dede0610/project-platform-dbt-databricks/commit/6ac47a886eed6a0ca5f10bb80fe2b1ad544cfce0))
+
 ## [0.3.1](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.3.0...v0.3.1) (2026-10-21)
 
 
