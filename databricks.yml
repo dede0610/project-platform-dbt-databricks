@@ -11,6 +11,7 @@ include:
 sync:
   include:
     - src/**
+    - streamlit/**
 
 # Variable declarations.
 # These variables are assigned in the dev/tst/prd targets below.

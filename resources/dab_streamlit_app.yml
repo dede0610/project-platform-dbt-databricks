@@ -1,0 +1,16 @@
+resources:
+  apps:
+    curated_data_browser:
+      name: streamlit-app-${bundle.target}
+      description: Browse tables and preview data from the curated dbt schema.
+      source_code_path: ../streamlit
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+      config:
+        command:
+          - streamlit
+          - run
+          - app.py

@@ -1,0 +1,9 @@
+command:
+  - streamlit
+  - run
+  - app.py
+env:
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  - name: DATABRICKS_CATALOG
+    value: dev_dbt  # Temporary workaround: app.yaml does not currently resolve bundle variables such as ${var.catalog}
