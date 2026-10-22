@@ -11,6 +11,7 @@ include:
 sync:
   include:
     - src/**
+    - streamlit/**
 
 # Variable declarations.
 # These variables are assigned in the dev/tst/prd targets below.
@@ -27,8 +28,10 @@ variables:
     description: The warehouse to use
   deployer_service_principal_id:
     description: Service principal ID used by CI/CD to deploy the bundle
+    default: ""
   runner_service_principal_id:
     description: Service principal ID used to run the deployed job
+    default: ""
 
 targets:
   local:
