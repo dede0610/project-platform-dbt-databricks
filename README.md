@@ -79,3 +79,9 @@ Configure the following in each GitHub Actions environment (`dev`, `tst`, and `p
 - **Secret** `DATABRICKS_CLIENT_ID_JOB`: the job runner service principal's application/client ID
 
 The deployer service principal needs permission to deploy the bundle and manage the deployed resources. The job runner service principal needs permission to run the dbt job and access the target catalog, schemas, and warehouse. Set up the required service principals and workspace permissions in Databricks; do not store their credentials in the repository.
+
+#### GitHub Pages dbt documentation
+
+To publish dbt documentation, set the repository's Pages source to **GitHub Actions** and add `DATABRICKS_TOKEN` as a repository Actions secret. Use a least-privilege Databricks token with read access to the `dev` catalog and SQL warehouse so the workflow can generate catalog metadata. The workflow publishes on pushes to `main` and can also be run manually.
+
+The generated site includes model and column metadata and is publicly accessible when repository Pages visibility is public. Review the generated documentation for sensitive information before enabling publication.
