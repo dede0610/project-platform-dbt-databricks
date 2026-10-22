@@ -1,0 +1,59 @@
+name: Publish dbt docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Generate dbt docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Install dbt packages
+        run: uv run dbt deps --project-dir src
+
+      - name: Generate dbt docs
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: uv run dbt docs generate --project-dir src --profiles-dir .dbt --target dev
+
+      - name: Stage public documentation files
+        run: |
+          mkdir -p _site
+          cp src/target/index.html src/target/manifest.json src/target/catalog.json _site/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
