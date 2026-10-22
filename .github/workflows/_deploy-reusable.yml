@@ -75,6 +75,13 @@ jobs:
         with:
           version: "1.21.0"
 
+      - name: Validate Bundle (Databricks)
+        id: validate_bundle
+        run: |
+          set -euo pipefail
+          echo "Validating bundle to ${{ inputs.environment }} environment"
+          databricks bundle validate --target "${{ inputs.environment }}"
+
       - name: Deploy Bundle (Databricks)
         id: run_deploy
         run: |
