@@ -4,7 +4,7 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 # project-platform-dbt-databricks
-> This project uses the dbt Jaffle Shop sample data to build a simple data product on Databricks Free Edition. The primary goal is not the data model itself, but to demonstrate how modern analytics engineering practices can be implemented on the Databricks platform using dbt.
+> This project uses the dbt Jaffle Shop sample data as a practical example for building and operating a data platform on Databricks Free Edition. Its focus is on platform engineering best practices—including infrastructure and workload management, secure service-principal authentication, source control, CI/CD, automated testing, and release management—with dbt. Aditionally a small Streamlit app per environment is created for exploring the curated models serving as example workloads on the platform.
 
 The project explores:
 
@@ -45,6 +45,7 @@ The project explores:
 ### Platform & Deployment
 - Databricks Asset Bundles (DAB)
 - Environment-specific deployments (Dev, Test, Prod)
+- A small Streamlit app deployed in each environment as a proof of concept for exploring the curated models
 - Service Principal authentication
 - Databricks Workflows orchestration
 
