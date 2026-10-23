@@ -295,8 +295,8 @@ jobs:
       contents: read
     env:
       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
-      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      DATABRICKS_CLIENT_ID_JOB: ${{ secrets.DATABRICKS_CLIENT_ID_JOB }}
+      DATABRICKS_CLIENT_SECRET_JOB: ${{ secrets.DATABRICKS_CLIENT_SECRET_JOB }}
 
     steps:
       - name: Checkout

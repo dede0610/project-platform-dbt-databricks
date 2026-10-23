@@ -183,6 +183,7 @@ Configure the following in each GitHub Actions environment (`dev`, `tst`, and `p
 - **Secret** `DATABRICKS_CLIENT_ID`: the deployer service principal's application/client ID
 - **Secret** `DATABRICKS_CLIENT_SECRET`: the deployer service principal's OAuth secret
 - **Secret** `DATABRICKS_CLIENT_ID_JOB`: the job runner service principal's application/client ID
+- **Secret** `DATABRICKS_CLIENT_SECRET_JOB`: the job runner service principal's OAuth secret (required in the `dev` environment for pull request dbt unit tests)
 
 The deployer service principal needs permission to deploy the bundle and manage the deployed resources. The job runner service principal needs permission to run the dbt job and access the target catalog, schemas, and warehouse. Set up the required service principals and workspace permissions in Databricks; do not store their credentials in the repository.
 

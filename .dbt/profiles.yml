@@ -39,5 +39,5 @@ dbt_databricks_project:
       schema: default
       threads: 4
       auth_type: oauth
-      client_id: "{{ env_var('DATABRICKS_CLIENT_ID') }}"
-      client_secret: "{{ env_var('DATABRICKS_CLIENT_SECRET') }}"
+      client_id: "{{ env_var('DATABRICKS_CLIENT_ID_JOB') }}"
+      client_secret: "{{ env_var('DATABRICKS_CLIENT_SECRET_JOB') }}"
