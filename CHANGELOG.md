@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.6.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.5.0...v0.6.0) (2026-10-23)
+
+
+### 🚀 New Features
+
+* **customers:** filter results to include only customers with names starting with 'K' ([aef40ec](https://github.com/dede0610/project-platform-dbt-databricks/commit/aef40ecb9875a7d1fb31f6f3590c21ed001a67b9))
+* **devcontainer:** add pre-commit hooks installation ([c96ee71](https://github.com/dede0610/project-platform-dbt-databricks/commit/c96ee710e7ae0bbe74417094def76efee608e7bd))
+* **docs:** publish dbt docs to GitHub Pages ([#34](https://github.com/dede0610/project-platform-dbt-databricks/issues/34)) ([2fb0914](https://github.com/dede0610/project-platform-dbt-databricks/commit/2fb09141db7dd1e9cb30ea2454dbaef1ab47b850))
+* **pre-commit:** add merge conflict checker to pre-commit hooks ([cd4105f](https://github.com/dede0610/project-platform-dbt-databricks/commit/cd4105fdc94d806489a02e6e9524973b184f0a93))
+* publish dbt docs from production release ([#37](https://github.com/dede0610/project-platform-dbt-databricks/issues/37)) ([532a00f](https://github.com/dede0610/project-platform-dbt-databricks/commit/532a00fed2d02f7033492067fd54766dcbe95386))
+
+
+### 🐛 Bug Fixes
+
+* **docs:** use OAuth secrets for dbt docs ([#38](https://github.com/dede0610/project-platform-dbt-databricks/issues/38)) ([b2b25d9](https://github.com/dede0610/project-platform-dbt-databricks/commit/b2b25d983e5c140a2b90fd54029cbbcc9afb3966))
+* **streamlit:** handle result metadata for type checking ([#36](https://github.com/dede0610/project-platform-dbt-databricks/issues/36)) ([3ad7c50](https://github.com/dede0610/project-platform-dbt-databricks/commit/3ad7c50e1a6d25f0bfbb45720300198f7d5cebb2))
+
+
+### ⚙️ Maintenance
+
+* **github-actions:** remove setup-git-for-dbt-deps action ([8e12dd4](https://github.com/dede0610/project-platform-dbt-databricks/commit/8e12dd45453b484af2f8eb6c8a9eae029637e0c6))
+* **streamlit:** use uv instead of pip ([fdc415c](https://github.com/dede0610/project-platform-dbt-databricks/commit/fdc415c55e57daf8c5aadc4c0ee79638396cd141))
+
+
+### 📚 Documentation
+
+* **README:** enhance project description and add details about Streamlit app deployment ([1725be6](https://github.com/dede0610/project-platform-dbt-databricks/commit/1725be6ba21139d5b99d0639207d6e4dca36d618))
+* **README:** update project description and clarify deployment requirements ([5cb9000](https://github.com/dede0610/project-platform-dbt-databricks/commit/5cb9000856943b97f817f1ec016e338d67ee504f))
+
 ## [0.5.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.4.0...v0.5.0) (2026-10-22)
 
 
