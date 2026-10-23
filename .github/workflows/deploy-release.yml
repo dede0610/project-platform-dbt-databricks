@@ -27,3 +27,15 @@ jobs:
       is_tag: true
       production: true
     secrets: inherit
+
+  publish-dbt-docs:
+    name: Publish production dbt docs
+    needs: deploy-to-prd
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/dbt-docs-pages.yml
+    with:
+      release_version: ${{ inputs.release_tag }}
+    secrets: inherit
