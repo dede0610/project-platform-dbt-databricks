@@ -41,7 +41,8 @@ jobs:
 
       - name: Generate dbt docs
         env:
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_DOCS_CLIENT_ID }}
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_DOCS_CLIENT_SECRET }}
         run: uv run dbt docs generate --project-dir src --profiles-dir .dbt --target prd
 
       - name: Stage public documentation files
