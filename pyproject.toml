@@ -26,6 +26,7 @@ dev = [
   "shandy-sqlfmt[jinjafmt]>=0.28.0, <1.0.0",
   "sqlfluff[rs]>=4.0.0, <4.1.0",
   "sqlfluff-templater-dbt>=4.0.0, <4.1.0",
+  "ty>=0.0.91",
 ]
 
 # --- SQLFluff Configuration ---

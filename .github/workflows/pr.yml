@@ -260,7 +260,49 @@ jobs:
         shell: bash
         run: |
           uv run sqlfmt --diff ${{ steps.changed-files.outputs.all_changed_files }}
-  
+
+  check-dbt-parse:
+    name: Parse dbt project
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # dbt loads the profile during parsing but does not connect to Databricks.
+      DATABRICKS_TOKEN: ci-parse-only
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Install dbt packages
+        run: uv run dbt deps --project-dir src
+
+      - name: Parse dbt project
+        run: uv run dbt parse --project-dir src --profiles-dir .dbt --target dev
+
+  check-python-types:
+    name: Check Python types
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python and install uv
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: false
+
+      - name: Check Streamlit app types
+        run: uv run --project streamlit --with ty ty check streamlit/*.py
+
   validate-bundle:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
