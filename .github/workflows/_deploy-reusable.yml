@@ -89,13 +89,19 @@ jobs:
           echo "Deploying bundle to ${{ inputs.environment }} environment"
           databricks bundle deploy --target "${{ inputs.environment }}"
 
-      - name: Deploy Streamlit app (Databricks)
+      - name: Start Streamlit app (Databricks)
         env:
           APP_NAME: streamlit-app-${{ inputs.environment }}
         run: |
           set -euo pipefail
           echo "--> Starting ${APP_NAME}"
           databricks apps start "$APP_NAME"
+
+      - name: Deploy Streamlit app (Databricks)
+        env:
+          APP_NAME: streamlit-app-${{ inputs.environment }}
+        run: |
+          set -euo pipefail
           echo "--> Deploying ${APP_NAME}"
           databricks apps deploy "$APP_NAME" --source-code-path "/Workspace/Shared/.bundle/dbt_databricks_project/${{ inputs.environment }}/files/streamlit"
 
