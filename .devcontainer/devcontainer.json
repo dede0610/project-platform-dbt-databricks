@@ -8,7 +8,7 @@
     }
   },
   "onCreateCommand": "grep -qxF 'eval \"$(starship init bash)\"' ~/.bashrc || echo 'eval \"$(starship init bash)\"' >> ~/.bashrc; grep -qxF 'export PATH=\"$HOME/.local/bin:$PATH\"' ~/.bashrc || echo 'export PATH=\"$HOME/.local/bin:$PATH\"' >> ~/.bashrc",
-  "postCreateCommand": "curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v1.21.0/install.sh | sh && uv sync --locked --group dev && curl -fsSL https://gh.io/copilot-install | bash",
+  "postCreateCommand": "curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v1.21.0/install.sh | sh && uv sync --locked --group dev && uv run prek install --hook-type pre-commit --prepare-hooks && uv run prek install --hook-type commit-msg && curl -fsSL https://gh.io/copilot-install | bash",
   "postStartCommand": "echo 'source .venv/bin/activate' >> ~/.bashrc",
   "containerEnv": {
     "DBT_PROJECT_DIR": "${containerWorkspaceFolder}/src",
