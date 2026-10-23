@@ -89,6 +89,19 @@ The service principal client IDs are configured as secrets in each corresponding
 
 Production deployment is the manual promotion step; development and test deployments are automated. A release event deploys to `tst` rather than `dev`.
 
+## Pull Request Checks
+
+The **PR Checks** workflow runs when a pull request targeting `main` is opened, edited, reopened, or updated with new commits. It runs these checks:
+
+- **PR title:** validates the title with Commitizen's conventional commit rules.
+- **Pre-commit:** runs YAML and TOML validation, end-of-file, trailing-whitespace, and mixed-line-ending hooks on changed files.
+- **SQL formatting:** checks formatting for changed files with `sqlfmt`.
+- **dbt project:** installs dbt packages and parses the project without connecting to Databricks.
+- **dbt unit tests:** runs dbt unit tests against the development Databricks workspace for pull requests from branches in this repository. This check is skipped for forked pull requests.
+- **Python types:** checks the Streamlit app with `ty`.
+- **Databricks Bundle:** validates the `dev`, `tst`, and `prd` targets for pull requests from branches in this repository. This check is skipped for forked pull requests.
+- **dbt deprecations:** runs `dbt-autofix` in dry-run mode and reports findings in a PR comment and the workflow summary; this scan is informational and does not fail the workflow.
+
 ## Data Flow
 
 The Databricks job runs `dbt seed` followed by `dbt build`. This flow applies to the `dev_dbt`, `tst_dbt`, and `prd_dbt` catalogs.

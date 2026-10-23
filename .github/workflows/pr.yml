@@ -285,6 +285,34 @@ jobs:
       - name: Parse dbt project
         run: uv run dbt parse --project-dir src --profiles-dir .dbt --target dev
 
+  check-dbt-unit-tests:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Run dbt unit tests
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    permissions:
+      contents: read
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Install dbt packages
+        run: uv run dbt deps --project-dir src
+
+      - name: Run dbt unit tests
+        run: uv run dbt test --project-dir src --profiles-dir .dbt --target ci --select test_type:unit
+
   check-python-types:
     name: Check Python types
     runs-on: ubuntu-latest
