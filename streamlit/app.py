@@ -41,8 +41,12 @@ def load_customers(catalog: str, warehouse_id: str) -> pd.DataFrame:
         with connection.cursor() as cursor:
             escaped_catalog = catalog.replace("`", "``")
             cursor.execute(f"SELECT * FROM `{escaped_catalog}`.`curated`.`customers`")
-            columns = [column[0] for column in cursor.description]
-            return pd.DataFrame(cursor.fetchall(), columns=columns)
+            description = cursor.description
+            if description is None:
+                raise RuntimeError("Customer query did not return a result set.")
+
+            columns = [str(column[0]) for column in description]
+            return pd.DataFrame(cursor.fetchall(), columns=pd.Index(columns))
 
 
 st.subheader("Customers")
