@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.1](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.6.0...v0.6.1) (2026-10-23)
+
+
+### 🐛 Bug Fixes
+
+* **docs:** correct typos and enhance README clarity; add repository structure and deployment lifecycle sections ([5a59a9e](https://github.com/dede0610/project-platform-dbt-databricks/commit/5a59a9e4abc3322ed5afda379ac735cfc5063e2d))
+* reorder Streamlit app deployment steps in workflow ([5423c80](https://github.com/dede0610/project-platform-dbt-databricks/commit/5423c800a79466275289e181266defc3466b068d))
+
+
+### 📚 Documentation
+
+* add link to published dbt documentation in README ([19c73e5](https://github.com/dede0610/project-platform-dbt-databricks/commit/19c73e5bf5f299043ccdb49cd59de35c60627a55))
+
 ## [0.6.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.5.0...v0.6.0) (2026-10-23)
 
 
