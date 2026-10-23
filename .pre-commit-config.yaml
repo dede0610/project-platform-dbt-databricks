@@ -25,6 +25,8 @@ repos:
         name: "Checker · check-yaml"
       - id: check-toml
         name: "Checker · check-toml"
+      - id: check-merge-conflict
+        name: "Checker · check-merge-conflict"
       - id: end-of-file-fixer
         name: "Fixer · end-of-file-fixer"
       - id: trailing-whitespace
