@@ -89,6 +89,19 @@ The service principal client IDs are configured as secrets in each corresponding
 
 Production deployment is the manual promotion step; development and test deployments are automated. A release event deploys to `tst` rather than `dev`.
 
+## Pull Request Checks
+
+The **PR Checks** workflow runs when a pull request targeting `main` is opened, edited, reopened, or updated with new commits. It runs these checks:
+
+- **PR title:** validates the title with Commitizen's conventional commit rules.
+- **Pre-commit:** runs YAML and TOML validation, end-of-file, trailing-whitespace, and mixed-line-ending hooks on changed files.
+- **SQL formatting:** checks formatting for changed files with `sqlfmt`.
+- **dbt project:** installs dbt packages and parses the project without connecting to Databricks.
+- **dbt unit tests:** runs dbt unit tests against the development Databricks workspace for pull requests from branches in this repository. This check is skipped for forked pull requests.
+- **Python types:** checks the Streamlit app with `ty`.
+- **Databricks Bundle:** validates the `dev`, `tst`, and `prd` targets for pull requests from branches in this repository. This check is skipped for forked pull requests.
+- **dbt deprecations:** runs `dbt-autofix` in dry-run mode and reports findings in a PR comment and the workflow summary; this scan is informational and does not fail the workflow.
+
 ## Data Flow
 
 The Databricks job runs `dbt seed` followed by `dbt build`. This flow applies to the `dev_dbt`, `tst_dbt`, and `prd_dbt` catalogs.
@@ -170,6 +183,7 @@ Configure the following in each GitHub Actions environment (`dev`, `tst`, and `p
 - **Secret** `DATABRICKS_CLIENT_ID`: the deployer service principal's application/client ID
 - **Secret** `DATABRICKS_CLIENT_SECRET`: the deployer service principal's OAuth secret
 - **Secret** `DATABRICKS_CLIENT_ID_JOB`: the job runner service principal's application/client ID
+- **Secret** `DATABRICKS_CLIENT_SECRET_JOB`: the job runner service principal's OAuth secret (required in the `dev` environment for pull request dbt unit tests)
 
 The deployer service principal needs permission to deploy the bundle and manage the deployed resources. The job runner service principal needs permission to run the dbt job and access the target catalog, schemas, and warehouse. Set up the required service principals and workspace permissions in Databricks; do not store their credentials in the repository.
 
