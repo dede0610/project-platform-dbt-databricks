@@ -27,4 +27,6 @@ dbt_databricks_project:
       http_path: /sql/1.0/warehouses/147aa610b0179c78
       schema: default
       threads: 4
-      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      auth_type: oauth
+      client_id: "{{ env_var('DATABRICKS_CLIENT_ID') }}"
+      client_secret: "{{ env_var('DATABRICKS_CLIENT_SECRET') }}"

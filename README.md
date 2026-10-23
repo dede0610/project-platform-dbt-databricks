@@ -82,6 +82,6 @@ The deployer service principal needs permission to deploy the bundle and manage 
 
 #### GitHub Pages dbt documentation
 
-To publish dbt documentation, set the repository's Pages source to **GitHub Actions** and add `DATABRICKS_TOKEN` as a repository Actions secret. Use a least-privilege Databricks token with read access to the `dev` catalog and SQL warehouse so the workflow can generate catalog metadata. The workflow publishes on pushes to `main` and can also be run manually.
+To publish dbt documentation, set the repository's Pages source to **GitHub Actions** and add `DATABRICKS_DOCS_CLIENT_ID` and `DATABRICKS_DOCS_CLIENT_SECRET` as repository Actions secrets for the deployer service principal. Grant it read access to the `prd` catalog and SQL warehouse so the workflow can generate catalog metadata. GitHub Pages is redeployed after a release is successfully deployed to production. The docs workflow checks out that release's tag, so the published documentation for business users stays aligned with the code and data model deployed to `prd`. It can also be run manually for a selected release version.
 
 The generated site includes model and column metadata and is publicly accessible when repository Pages visibility is public. Review the generated documentation for sensitive information before enabling publication.
