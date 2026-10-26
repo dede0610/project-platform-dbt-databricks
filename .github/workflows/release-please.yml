@@ -33,7 +33,7 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.pr }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # We must check out the branch created by release-please
           ref: ${{ fromJson(needs.release-please.outputs.pr).headBranchName }}
@@ -52,7 +52,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Commit uv.lock
-        uses: devops-infra/action-commit-push@v1.3.2
+        uses: devops-infra/action-commit-push@v1.5.0
         with:
           github_token: "${{ secrets.GITHUB_TOKEN }}"
           commit_prefix: "chore: "
@@ -99,7 +99,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Find PR(s) for commit
         id: prs-for-commit
@@ -150,7 +150,7 @@ jobs:
 
     steps:
       - name: Checkout (shallow ok)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
