@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout at requested ref
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.is_tag && format('refs/tags/{0}', inputs.ref) || inputs.ref }}
           fetch-depth: 0
