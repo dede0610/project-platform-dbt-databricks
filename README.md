@@ -58,13 +58,32 @@ The project explores:
 
 ## Repository Structure
 
-- `.github/` — GitHub Actions workflows and repository automation
-- `resources/` — Databricks Asset Bundle definitions for the dbt job and Streamlit app
-- `src/` — dbt project, including models, tests, seeds, and macros
-- `streamlit/` — Streamlit data browser application
-- `databricks.yml` — Bundle targets and environment-specific settings
-- `.dbt/` — Local dbt connection profiles
-- `justfile`, `pyproject.toml`, and `uv.lock` — Common development commands and Python dependencies
+```text
+.
+├── .github/
+│   └── workflows/            # CI/CD and release automation
+├── .dbt/                     # Local dbt connection profiles
+├── resources/
+│   ├── dab_job.yml           # Databricks dbt job
+│   └── dab_streamlit_app.yml # Databricks streamlit app
+├── src/                    # dbt project
+│   ├── models/
+│   │   ├── marts/          # Curated tables
+│   │   └── staging/        # Source-aligned views
+│   ├── seeds/              # Sample CSV data
+│   ├── macros/
+│   └── dbt_project.yml
+├── streamlit/              # Data application
+│   ├── app.py
+│   ├── app.yaml
+│   └── pyproject.toml
+├── databricks.yml          # Bundle targets and environment settings
+├── pyproject.toml          # Python dependencies and tooling
+└── uv.lock
+```
+
+The tree highlights the main project files; local profiles in `.dbt/` should
+not contain committed credentials.
 
 ## Databricks Platform Structure
 
