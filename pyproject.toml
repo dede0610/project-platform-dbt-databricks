@@ -33,13 +33,14 @@ dev = [
 # Per dbtonic linting rules - https://docs.getdbt.com/docs/cloud/dbt-cloud-ide/lint-format#configure-dbtonic-linting-rules
 # Updates for sqlfmt compatibility - https://sqlfmt.com/docs/integrations/sqlfluff
 [tool.sqlfluff.core]
-templater = "jinja"
+templater = "dbt"
 dialect = "databricks"
 max_line_length = 88
 # Included to be compatible with sqlfmt
 exclude_rules = [
     "layout.indent",
     "layout.cte_bracket",
+    "layout.cte_newline",
     "layout.keyword_newline",
     "layout.select_targets",
     "layout.spacing"
@@ -56,7 +57,7 @@ ignore_paths = [
 ]
 
 [tool.sqlfluff.templater.dbt]
-project_dir = "."
+project_dir = "src/"
 dbt_skip_compilation_error = false
 
 [tool.sqlfluff.templater.jinja]
