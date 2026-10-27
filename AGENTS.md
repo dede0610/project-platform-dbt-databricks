@@ -39,6 +39,8 @@ validation. Some checks need repository secrets and are skipped for forked PRs.
 
 ## Project conventions
 
+- Use Conventional Commits for commit messages (for example, `feat: add ...`
+  or `fix: correct ...`).
 - Preserve the staging-to-marts layering and use dbt `source()` and `ref()` to
   express dependencies.
 - Keep model documentation and data tests alongside models in YAML. Document
