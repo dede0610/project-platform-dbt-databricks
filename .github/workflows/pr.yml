@@ -332,7 +332,7 @@ jobs:
         run: uv run --project streamlit --with ty ty check streamlit/*.py
 
   validate-bundle:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.event.pull_request.head.ref, 'dependabot/') }}
     runs-on: ubuntu-latest
     name: Validate Databricks Bundle
     strategy:
