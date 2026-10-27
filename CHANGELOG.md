@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.1](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.1.0...v1.1.1) (2026-10-27)
+
+
+### ⚙️ Maintenance
+
+* exclude src/macros/ from sqlfluff-lint checks ([64b04c8](https://github.com/dede0610/project-platform-dbt-databricks/commit/64b04c8f9ddf95ffdd5da14b887ac6f086307ab7))
+* reorganize justfile recipes ([26bba44](https://github.com/dede0610/project-platform-dbt-databricks/commit/26bba445d6a9493d395f0b6d69e774fbeb5dd904))
+* simplify date casting in staging SQL models ([c698039](https://github.com/dede0610/project-platform-dbt-databricks/commit/c6980392dd8c4d85dd4ce34806fa99b3c2499042))
+* update SQLFluff configuration for dbt templater and project directory ([79c275e](https://github.com/dede0610/project-platform-dbt-databricks/commit/79c275e78c304419520716b407ef96dcbfa1fabe))
+
+
+### 📚 Documentation
+
+* add repository Copilot instructions ([#51](https://github.com/dede0610/project-platform-dbt-databricks/issues/51)) ([87614d5](https://github.com/dede0610/project-platform-dbt-databricks/commit/87614d563296cfa72608da82cb9f9ae31a5d63fe))
+* show repository structure as a tree ([cf30382](https://github.com/dede0610/project-platform-dbt-databricks/commit/cf30382b7d4b9303ecbcba3fd51464600cb95cb9))
+* simplify pull request template ([#52](https://github.com/dede0610/project-platform-dbt-databricks/issues/52)) ([aca90c3](https://github.com/dede0610/project-platform-dbt-databricks/commit/aca90c341a523f0cfcc551db8861ba3b9a3cd8e6))
+
 ## [1.1.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.0.0...v1.1.0) (2026-10-27)
 
 
