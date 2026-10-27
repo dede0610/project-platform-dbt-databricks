@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.0.0...v1.1.0) (2026-10-27)
+
+
+### 🚀 New Features
+
+* add Addy Osmani code review skill ([#49](https://github.com/dede0610/project-platform-dbt-databricks/issues/49)) ([2f77c54](https://github.com/dede0610/project-platform-dbt-databricks/commit/2f77c54ec9305989ee9168ef585a353e78c03d27))
+
+
+### 📚 Documentation
+
+* add AI code review guidance ([#47](https://github.com/dede0610/project-platform-dbt-databricks/issues/47)) ([be552ee](https://github.com/dede0610/project-platform-dbt-databricks/commit/be552eee7c274796521bafe1db9d50df906203e6))
+
 ## [1.0.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.6.1...v1.0.0) (2026-10-27)
 
 
