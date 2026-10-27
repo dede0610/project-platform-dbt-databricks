@@ -48,6 +48,7 @@ repos:
       - id: sqlfluff-lint
         name: "SQL · Lint SQL code files"
         additional_dependencies: ['dbt-databricks>=1.11.0,<1.12.0', 'sqlfluff-templater-dbt']
+        exclude: ^src/macros/
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
     rev: v0.14.10
