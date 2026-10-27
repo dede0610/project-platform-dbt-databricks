@@ -1,43 +1,26 @@
-<!--
-     Before submitting a Pull Request, please ensure you've done the following:
-     - 👷‍♀️ Create small PRs. In most cases this should be possible.
-     - ✅ Provide tests for your changes.
-     - 📝 Use conventional commit messages: https://www.conventionalcommits.org/
-     - 📗 Update any related documentation.
--->
+<!-- PR title must follow Conventional Commits; CI validates it. -->
 
-## What type of PR is this? (check all applicable)
+## Summary
 
-- [ ] Fix
-- [ ] Feature
-- [ ] Other
+<!-- What changed and why? -->
 
-## Does the PR contain a breaking change?
+## Validation
+
+<!-- List the exact commands and results. If a check was not run, explain why. -->
+
+## Data model impact (if applicable)
+
+<!-- For dbt changes, note affected model grain or join/aggregation behavior, and related docs/tests. Remove if not applicable. -->
+
+## Breaking changes
 
 - [ ] No
-- [ ] Yes
+- [ ] Yes - describe the impact and any migration needed.
 
-## Description
+## Related issue (optional)
 
+<!-- Use "Closes #123" if this PR closes an issue. Remove if none. -->
 
-## Related Tickets & Documents
-<!--
-For pull requests that relate or close an issue, please include them
-below.
+## Post deployment steps (if applicable)
 
-For example having the text: "closes #1234" would connect the current pull
-request to issue 1234.  And when we merge the pull request, Github will
-automatically close the issue.
--->
-- Related Issue #
-- Closes #
-
-## Added/updated tests?
-_We encourage you to keep the code coverage percentage at 80% and above._
-
-- [ ] Yes
-- [ ] No, and this is why: _please replace this line with details on why tests
-      have not been included_
-- [ ] I need help with writing tests
-
-## [optional] Are there any post deployment tasks we need to perform?
+<!-- List required post-deployment steps. Remove if none. -->
