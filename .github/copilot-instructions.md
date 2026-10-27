@@ -15,6 +15,6 @@ aggregation, null behavior, source/ref dependencies, and whether model
 documentation and data tests remain accurate. Do not assume a SQL change is
 correct just because it parses or is formatted.
 
-Use `AGENTS.md` for repository context and the `code-review` skill for the
+Use `AGENTS.md` for repository context and the `code-review-and-quality` skill for the
 review workflow. Follow any applicable path-specific instructions in
 `.github/instructions/`.
