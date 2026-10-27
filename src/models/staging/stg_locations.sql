@@ -16,7 +16,7 @@ with
             tax_rate,
 
             -- -------- timestamps
-            cast(opened_at as date) as opened_date
+            opened_at::date as opened_date
 
         from source
 
