@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.6.1...v1.0.0) (2026-10-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* declare v1.0.0 release baseline ([#45](https://github.com/dede0610/project-platform-dbt-databricks/issues/45))
+
+### ⚙️ Maintenance
+
+* declare v1.0.0 release baseline ([#45](https://github.com/dede0610/project-platform-dbt-databricks/issues/45)) ([f7510b5](https://github.com/dede0610/project-platform-dbt-databricks/commit/f7510b5c6212c5bdc169345455ce9e4d7bc47441))
+
 ## [0.6.1](https://github.com/dede0610/project-platform-dbt-databricks/compare/v0.6.0...v0.6.1) (2026-10-23)
 
 
