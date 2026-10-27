@@ -21,15 +21,26 @@ on:
         required: false
         type: boolean
         default: false
+      moving_tag:
+        description: "Optional moving tag to update after a successful deployment"
+        required: false
+        type: string
+        default: ""
     outputs:
       result:
         description: "Outcome of the deploy job"
         value: ${{ jobs.deploy.outputs.result }}
+      commit_sha:
+        description: "Commit deployed by this workflow"
+        value: ${{ jobs.deploy.outputs.commit_sha }}
 
 jobs:
   deploy:
     name: Deploy ${{ inputs.ref }} → ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
 
     # ✅ Single environment reference = single canonical deployment record
     #    You can set URL statically or from a step output (recommended below).
@@ -48,6 +59,7 @@ jobs:
 
     outputs:
       result: ${{ steps.set_result.outputs.result }}
+      commit_sha: ${{ steps.rev.outputs.commit_sha }}
 
     steps:
       - name: Checkout at requested ref
@@ -114,3 +126,37 @@ jobs:
       - name: Set result (failure)
         if: failure()
         run: echo "result=failure" >> "$GITHUB_OUTPUT"
+
+  update-moving-tag:
+    name: Update ${{ inputs.moving_tag }} tag
+    if: ${{ inputs.moving_tag != '' }}
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create or move tag to deployed commit
+        uses: actions/github-script@v9
+        env:
+          MOVING_TAG: ${{ inputs.moving_tag }}
+          TARGET_SHA: ${{ needs.deploy.outputs.commit_sha }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const tag = process.env.MOVING_TAG;
+            const ref = `tags/${tag}`;
+            const sha = process.env.TARGET_SHA;
+            let exists = true;
+
+            try {
+              await github.rest.git.getRef({ owner, repo, ref });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              exists = false;
+            }
+
+            if (exists) {
+              await github.rest.git.updateRef({ owner, repo, ref, sha, force: true });
+            } else {
+              await github.rest.git.createRef({ owner, repo, ref: `refs/${ref}`, sha });
+            }
