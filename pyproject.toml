@@ -9,8 +9,7 @@ description = "Data Product: dbt_databricks_project"
 readme = "README.md"
 requires-python = "==3.12.*"
 dependencies = [
-  "dbt-core>=1.12.5,<1.13.0",
-  "dbt-databricks>=1.12.7,<1.13.0",
+  "dbt>=2.0.9,<2.2.0",
 ]
 
 [project.urls]  # https://packaging.python.org/en/latest/specifications/well-known-project-urls/#well-known-labels
@@ -25,7 +24,6 @@ dev = [
   "ruff>=0.14.0, <1.0.0",
   "shandy-sqlfmt[jinjafmt]>=0.28.0, <1.0.0",
   "sqlfluff[rs]>=4.0.0, <4.1.0",
-  "sqlfluff-templater-dbt>=4.0.0, <4.1.0",
   "ty>=0.0.91",
 ]
 
