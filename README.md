@@ -87,13 +87,14 @@ not contain committed credentials.
 
 ## Databricks Platform Structure
 
-Each deployed environment has its own Unity Catalog catalog. The dbt job uses the `default` schema as its target schema; the dbt project writes seeds, staging models, and marts to `raw`, `stg`, and `curated` respectively.
+Each deployed environment has its own Unity Catalog catalog. The dbt job uses the `default` schema as its target schema; the dbt project writes seeds, staging models, and marts to `raw`, `stg`, and `curated` respectively. Pull request unit tests use a separate `ci_dbt` catalog so they do not write to a deployed environment's catalog.
 
-| Environment | Catalog | Schemas | Deployer service principal | Job runner service principal |
+| Environment | Catalog | Schemas | Deployer service principal | Job runner / CI service principal |
 | --- | --- | --- | --- | --- |
 | `dev` | `dev_dbt` | `default`, `raw`, `stg`, `curated` | `dev_dbt_deployer_sp` (`DATABRICKS_CLIENT_ID` secret) | `dev_dbt_sp` (`DATABRICKS_CLIENT_ID_JOB` secret) |
 | `tst` | `tst_dbt` | `default`, `raw`, `stg`, `curated` | `tst_dbt_deployer_sp` (`DATABRICKS_CLIENT_ID` secret) | `tst_dbt_sp` (`DATABRICKS_CLIENT_ID_JOB` secret) |
 | `prd` | `prd_dbt` | `default`, `raw`, `stg`, `curated` | `prd_dbt_deployer_sp` (`DATABRICKS_CLIENT_ID` secret) | `prd_dbt_sp` (`DATABRICKS_CLIENT_ID_JOB` secret) |
+| Pull request CI | `ci_dbt` | `raw`, `stg`, `curated` | — | Dedicated CI service principal (`DATABRICKS_CLIENT_ID_JOB` secret in the `ci` GitHub Actions environment) |
 
 The service principal client IDs are configured as secrets in each corresponding GitHub Actions environment; their values are not stored in the repository. The production dbt documentation workflow uses the separate `sp-dbt-docs-publisher-prd` service principal.
 
@@ -116,7 +117,7 @@ The **PR Checks** workflow runs when a pull request targeting `main` is opened, 
 - **Pre-commit:** runs YAML and TOML validation, end-of-file, trailing-whitespace, and mixed-line-ending hooks on changed files.
 - **SQL formatting:** checks formatting for changed files with `sqlfmt`.
 - **dbt project:** installs dbt packages and parses the project without connecting to Databricks.
-- **dbt unit tests:** runs dbt unit tests against the development Databricks workspace for pull requests from branches in this repository. This check is skipped for forked pull requests.
+- **dbt unit tests:** runs dbt unit tests against the `ci_dbt` catalog using the `ci` GitHub Actions environment for pull requests from branches in this repository. This check is skipped for forked pull requests.
 - **Python types:** checks the Streamlit app with `ty`.
 - **Databricks Bundle:** validates the `dev`, `tst`, and `prd` targets for pull requests from branches in this repository. This check is skipped for forked pull requests.
 - **dbt deprecations:** runs `dbt-autofix` in dry-run mode and reports findings in a PR comment and the workflow summary; this scan is informational and does not fail the workflow.
@@ -193,18 +194,35 @@ flowchart LR
 - [Just](https://github.com/casey/just), installable with `uv tool install rust-just`
 - A Databricks workspace with Unity Catalog access and a SQL warehouse
 
-#### GitHub Actions deployments
+#### GitHub Actions environments
 
-Configure the following in each GitHub Actions environment (`dev`, `tst`, and `prd`):
+Configure the following in each deployment GitHub Actions environment (`dev`, `tst`, and `prd`):
 
 - **Environment variable** `DATABRICKS_HOST`: the workspace URL
 - **Environment variable** `BUNDLE_VAR_WAREHOUSE_NAME`: the SQL warehouse name
 - **Secret** `DATABRICKS_CLIENT_ID`: the deployer service principal's application/client ID
 - **Secret** `DATABRICKS_CLIENT_SECRET`: the deployer service principal's OAuth secret
 - **Secret** `DATABRICKS_CLIENT_ID_JOB`: the job runner service principal's application/client ID
-- **Secret** `DATABRICKS_CLIENT_SECRET_JOB`: the job runner service principal's OAuth secret (required in the `dev` environment for pull request dbt unit tests)
+- **Secret** `DATABRICKS_CLIENT_SECRET_JOB`: the job runner service principal's OAuth secret
 
 The deployer service principal needs permission to deploy the bundle and manage the deployed resources. The job runner service principal needs permission to run the dbt job and access the target catalog, schemas, and warehouse. Set up the required service principals and workspace permissions in Databricks; do not store their credentials in the repository.
+
+For pull request dbt unit tests, create a separate GitHub Actions environment named `ci` with:
+
+- **Environment variable** `DATABRICKS_HOST`: the CI workspace URL
+- **Secret** `DATABRICKS_CLIENT_ID_JOB`: the dedicated CI service principal's application/client ID
+- **Secret** `DATABRICKS_CLIENT_SECRET_JOB`: that service principal's OAuth secret
+
+The CI service principal needs permission to use the configured SQL warehouse and the `ci_dbt` catalog. Grant `USE CATALOG` and `CREATE SCHEMA` on `ci_dbt` so it can create the `raw`, `stg`, and `curated` schemas. If those schemas are created by an administrator instead, grant the principal `USE SCHEMA` and `CREATE TABLE` on each schema. Prefer a CI-only principal scoped to `ci_dbt`, rather than reusing a deployment or production principal.
+
+The unit-test job expects the seed and model relations to exist in `ci_dbt` for dbt's input-column discovery. Bootstrap an empty CI catalog once with:
+
+```sh
+uv run dbt seed --project-dir src --profiles-dir .dbt --target ci
+uv run dbt run --project-dir src --profiles-dir .dbt --target ci
+```
+
+The PR check then runs only dbt unit tests against those relations. Repeat the bootstrap if the CI catalog is recreated or its source/model relations are removed.
 
 #### GitHub Pages dbt documentation
 
