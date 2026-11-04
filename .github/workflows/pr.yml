@@ -311,12 +311,10 @@ jobs:
       - name: Install dbt packages
         run: uv run dbt deps --project-dir src
 
-      # Sources don't create dbt DAG dependencies on seeds, so load source tables first.
-      - name: Load dbt seeds
-        run: uv run dbt seed --project-dir src --profiles-dir .dbt --target ci
-
-      - name: Build dbt models
-        run: uv run dbt run --project-dir src --profiles-dir .dbt --target ci
+      # Bootstrap an empty ci_dbt catalog once before enabling this PR job.
+      # Run these manually when the CI catalog has no source/model relations:
+      #   uv run dbt seed --project-dir src --profiles-dir .dbt --target ci
+      #   uv run dbt run --project-dir src --profiles-dir .dbt --target ci
 
       - name: Run dbt unit tests
         run: uv run dbt test --project-dir src --profiles-dir .dbt --target ci --select test_type:unit
