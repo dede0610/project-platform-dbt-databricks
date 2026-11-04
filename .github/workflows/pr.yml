@@ -331,6 +331,24 @@ jobs:
       - name: Check Streamlit app types
         run: uv run --project streamlit --with ty ty check streamlit/*.py
 
+  check-streamlit-tests:
+    name: Run Streamlit tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python and install uv
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: false
+
+      - name: Run Streamlit tests
+        run: uv run --project streamlit --group dev pytest streamlit/tests
+
   check-ruff:
     name: Check Python lint and formatting
     runs-on: ubuntu-latest
