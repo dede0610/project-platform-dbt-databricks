@@ -15,7 +15,7 @@ concurrency:
 jobs:
   check-title:
     runs-on: ubuntu-latest
-    name: Check PR title
+    name: commitizen - check PR title
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -33,7 +33,7 @@ jobs:
           uv run cz check --message "${{ github.event.pull_request.title }}"
 
   check-pre-commit:
-    name: Check pre-commits
+    name: prek - check changed files
     runs-on: ubuntu-latest
 
     steps:
@@ -91,7 +91,7 @@ jobs:
       pull-requests: write
       issues: write
 
-    name: Check for deprecated dbt configuration
+    name: dbt-autofix - check deprecated configuration
     runs-on: ubuntu-latest
     env:
       DBT_AUTOFIX_JSON: ./autofix.jsonl
@@ -237,7 +237,7 @@ jobs:
     permissions:
       contents: read
 
-    name: Check SQL formatting
+    name: sqlfmt - check SQL formatting
     runs-on: ubuntu-latest
 
     steps:
@@ -262,7 +262,7 @@ jobs:
           uv run sqlfmt --diff ${{ steps.changed-files.outputs.all_changed_files }}
 
   check-dbt-parse:
-    name: Parse dbt project
+    name: dbt - parse project
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -288,7 +288,7 @@ jobs:
 
   check-dbt-unit-tests:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    name: Run dbt unit tests
+    name: dbt - run unit tests
     runs-on: ubuntu-latest
     environment:
       name: ci
@@ -320,7 +320,7 @@ jobs:
         run: uv run dbt test --project-dir src --profiles-dir .dbt --target ci --select test_type:unit
 
   check-python-types:
-    name: Check Python types
+    name: ty - check Streamlit types
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -338,7 +338,7 @@ jobs:
         run: uv run --project streamlit --with ty ty check streamlit/*.py
 
   check-streamlit-tests:
-    name: Run Streamlit tests
+    name: Streamlit - run tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -356,7 +356,7 @@ jobs:
         run: uv run --project streamlit --group dev pytest streamlit/tests
 
   check-ruff:
-    name: Check Python lint and formatting
+    name: Ruff - lint and format
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -378,7 +378,7 @@ jobs:
   validate-bundle:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.event.pull_request.head.ref, 'dependabot/') }}
     runs-on: ubuntu-latest
-    name: Validate Databricks Bundle
+    name: Databricks - validate bundle
     strategy:
       matrix:
         environment: [dev, tst, prd]
