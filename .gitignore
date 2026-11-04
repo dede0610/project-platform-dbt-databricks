@@ -28,3 +28,7 @@ dbt_internal_packages/
 
 # VS Code
 .vscode/
+
+# Streamlit test environment
+streamlit/.venv/
+streamlit/.pytest_cache/
