@@ -331,6 +331,26 @@ jobs:
       - name: Check Streamlit app types
         run: uv run --project streamlit --with ty ty check streamlit/*.py
 
+  check-ruff:
+    name: Check Python lint and formatting
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python, install uv, and sync dependencies
+        uses: ./.github/actions/common-setup
+        with:
+          install-deps: true
+
+      - name: Run Ruff checks
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+
   validate-bundle:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.event.pull_request.head.ref, 'dependabot/') }}
     runs-on: ubuntu-latest
