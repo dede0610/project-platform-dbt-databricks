@@ -36,7 +36,7 @@ def load_mart(
 ) -> pd.DataFrame:
     selected_columns = {
         "orders": "order_id, customer_id, order_date, order_total, customer_order_number",
-        "order_items": "product_name, product_type, product_price",
+        "order_items": ("product_name, product_price, is_food_item, is_drink_item"),
         "customers": (
             "customer_id, customer_name, count_lifetime_orders, first_order_date, "
             "last_order_date, lifetime_spend, customer_type"
@@ -82,6 +82,11 @@ orders["order_total"] = pd.to_numeric(orders["order_total"], errors="coerce")
 order_items["product_price"] = pd.to_numeric(
     order_items["product_price"], errors="coerce"
 )
+order_items["product_category"] = "Other"
+order_items.loc[order_items["is_food_item"].fillna(False), "product_category"] = "Food"
+order_items.loc[order_items["is_drink_item"].fillna(False), "product_category"] = (
+    "Drink"
+)
 
 total_orders = len(orders)
 total_sales = orders["order_total"].sum()
@@ -113,7 +118,7 @@ else:
 st.subheader("What customers are ordering")
 item_column, product_column = st.columns(2)
 sales_by_type = (
-    order_items.groupby("product_type")["product_price"]
+    order_items.groupby("product_category")["product_price"]
     .sum()
     .sort_values(ascending=False)
     .rename("Item sales (before tax)")
