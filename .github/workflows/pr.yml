@@ -286,9 +286,9 @@ jobs:
         # Parsing does not connect to Databricks; dev uses the placeholder token above.
         run: uv run dbt parse --project-dir src --profiles-dir .dbt --target dev
 
-  check-dbt-unit-tests:
+  check-dbt-build:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    name: Run dbt unit tests
+    name: Build dbt project and run tests
     runs-on: ubuntu-latest
     environment:
       name: ci
@@ -311,8 +311,8 @@ jobs:
       - name: Install dbt packages
         run: uv run dbt deps --project-dir src
 
-      - name: Run dbt unit tests
-        run: uv run dbt test --project-dir src --profiles-dir .dbt --target ci --select test_type:unit
+      - name: Build dbt project and run tests
+        run: uv run dbt build --project-dir src --profiles-dir .dbt --target ci
 
   check-python-types:
     name: Check Python types
