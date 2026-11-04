@@ -134,10 +134,6 @@ top_products = (
 )
 product_column.bar_chart(top_products)
 
-with st.expander("Customer details (K-name subset)"):
+with st.expander("Customer details"):
     customers = load_mart(catalog=catalog, warehouse_id=warehouse_id, mart="customers")
-    st.caption(
-        "The customers mart currently includes only customers whose names start "
-        "with K, so these rows are not a complete customer population."
-    )
     st.dataframe(customers, use_container_width=True, hide_index=True)
