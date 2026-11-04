@@ -283,6 +283,7 @@ jobs:
         run: uv run dbt deps --project-dir src
 
       - name: Parse dbt project
+        # Parsing does not connect to Databricks; dev uses the placeholder token above.
         run: uv run dbt parse --project-dir src --profiles-dir .dbt --target dev
 
   check-dbt-unit-tests:
@@ -290,7 +291,7 @@ jobs:
     name: Run dbt unit tests
     runs-on: ubuntu-latest
     environment:
-      name: dev
+      name: ci
     permissions:
       contents: read
     env:
@@ -309,6 +310,11 @@ jobs:
 
       - name: Install dbt packages
         run: uv run dbt deps --project-dir src
+
+      # Bootstrap an empty ci_dbt catalog once before enabling this PR job.
+      # Run these manually when the CI catalog has no source/model relations:
+      #   uv run dbt seed --project-dir src --profiles-dir .dbt --target ci
+      #   uv run dbt run --project-dir src --profiles-dir .dbt --target ci
 
       - name: Run dbt unit tests
         run: uv run dbt test --project-dir src --profiles-dir .dbt --target ci --select test_type:unit

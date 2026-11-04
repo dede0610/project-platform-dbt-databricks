@@ -33,7 +33,7 @@ dbt_databricks_project:
 
     ci:
       type: databricks
-      catalog: dev_dbt
+      catalog: ci_dbt
       host: "{{ env_var('DATABRICKS_HOST') }}"
       http_path: /sql/1.0/warehouses/147aa610b0179c78
       schema: default
