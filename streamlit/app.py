@@ -35,7 +35,7 @@ def load_mart(
     mart: Literal["orders", "order_items", "customers"],
 ) -> pd.DataFrame:
     selected_columns = {
-        "orders": "order_id, customer_id, order_date, order_total, customer_order_number",
+        "orders": "order_id, customer_id, order_total, customer_order_number",
         "order_items": ("product_name, product_price, is_food_item, is_drink_item"),
         "customers": (
             "customer_id, customer_name, count_lifetime_orders, first_order_date, "
@@ -77,7 +77,6 @@ orders = load_mart(
 )
 order_items = load_mart(catalog=catalog, warehouse_id=warehouse_id, mart="order_items")
 
-orders["order_date"] = pd.to_datetime(orders["order_date"], errors="coerce")
 orders["order_total"] = pd.to_numeric(orders["order_total"], errors="coerce")
 order_items["product_price"] = pd.to_numeric(
     order_items["product_price"], errors="coerce"
@@ -101,19 +100,6 @@ metric_columns[0].metric("Total sales", f"${total_sales:,.2f}")
 metric_columns[1].metric("Orders", f"{total_orders:,}")
 metric_columns[2].metric("Average order value", f"${average_order_value:,.2f}")
 metric_columns[3].metric("Repeat buyer rate", f"{repeat_buyer_rate:.1f}%")
-
-st.subheader("Sales over time")
-monthly_sales = (
-    orders.dropna(subset=["order_date"])
-    .assign(month=lambda frame: frame["order_date"].dt.to_period("M").astype(str))
-    .groupby("month", as_index=True)["order_total"]
-    .sum()
-    .rename("Sales")
-)
-if monthly_sales.empty:
-    st.info("No dated orders are available to chart.")
-else:
-    st.line_chart(monthly_sales)
 
 st.subheader("What customers are ordering")
 item_column, product_column = st.columns(2)
