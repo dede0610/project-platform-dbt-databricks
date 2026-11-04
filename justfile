@@ -54,8 +54,8 @@ main:
 cleanup: main
     git fetch --prune
     git branch --format='%(refname:short)' | while read -r branch; do \
-        [[ "$$branch" == "main" ]] && continue; \
-        git branch -D "$$branch"; \
+        [[ "$branch" == "main" ]] && continue; \
+        git branch -D "$branch"; \
     done
     @echo "All local branches removed except main."
 
