@@ -238,12 +238,18 @@ The generated site includes model and column metadata and is publicly accessible
 
 ### Databricks jobs
 
-![Databricks Jobs page showing the dbt job deployed to dev, test, and production](docs/images/Databricks-jobs.png)
+![Databricks Jobs page showing the dbt job deployed to dev, test, and production](docs/images/databricks-jobs.png)
+
+### Jobs - dbt task
+
+![Successful dbt build task run in Databricks, showing the job details and initial dbt output](docs/images/job-screenshot1.png)
+
+![Successful dbt build task run in Databricks, showing completed models and passing data tests](docs/images/job-screenshot2.png)
 
 ### Databricks apps
 
-![Databricks Apps page showing the dev, test, and production Streamlit apps](docs/images/Databricks-apps.png)
+![Databricks Apps page showing the dev, test, and production Streamlit apps](docs/images/databricks-apps.png)
 
 ### Streamlit app
 
-![Streamlit app dashboard showing Jaffle Shop sales metrics and product charts](docs/images/App-screenshot.png)
+![Streamlit app dashboard showing Jaffle Shop sales metrics and product charts](docs/images/app-screenshot.png)
