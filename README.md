@@ -76,6 +76,8 @@ The project explores:
 ├── streamlit/              # Data application
 │   ├── app.py
 │   ├── app.yaml
+│   ├── tests/
+│   │   └── test_app.py     # Streamlit app tests
 │   └── pyproject.toml
 ├── databricks.yml          # Bundle targets and environment settings
 ├── pyproject.toml          # Python dependencies and tooling
