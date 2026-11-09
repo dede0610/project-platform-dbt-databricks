@@ -76,6 +76,8 @@ The project explores:
 ├── streamlit/              # Data application
 │   ├── app.py
 │   ├── app.yaml
+│   ├── tests/
+│   │   └── test_app.py     # Streamlit app tests
 │   └── pyproject.toml
 ├── databricks.yml          # Bundle targets and environment settings
 ├── pyproject.toml          # Python dependencies and tooling
@@ -231,3 +233,23 @@ View the published documentation: [dbt documentation](https://dede0610.github.io
 To publish dbt documentation, set the repository's Pages source to **GitHub Actions** and add `DATABRICKS_DOCS_CLIENT_ID` and `DATABRICKS_DOCS_CLIENT_SECRET` as repository Actions secrets for `sp-dbt-docs-publisher-prd`. Grant this service principal `BROWSE`, `READ METADATA`, and `USE CATALOG` on the `prd_dbt` catalog, and `USE SCHEMA` on the `prd_dbt` schema. It also needs access to the SQL warehouse so the workflow can generate catalog metadata. GitHub Pages is redeployed after a release is successfully deployed to production. The docs workflow checks out that release's tag, so the published documentation for business users stays aligned with the code and data model deployed to `prd`. It can also be run manually for a selected release version.
 
 The generated site includes model and column metadata and is publicly accessible when repository Pages visibility is public. Review the generated documentation for sensitive information before enabling publication.
+
+## Screenshots
+
+### Databricks jobs
+
+![Databricks Jobs page showing the dbt job deployed to dev, test, and production](docs/images/databricks-jobs.png)
+
+### Jobs - dbt task
+
+![Successful dbt build task run in Databricks, showing the job details and initial dbt output](docs/images/job-screenshot1.png)
+
+![Successful dbt build task run in Databricks, showing completed models and passing data tests](docs/images/job-screenshot2.png)
+
+### Databricks apps
+
+![Databricks Apps page showing the dev, test, and production Streamlit apps](docs/images/databricks-apps.png)
+
+### Streamlit app
+
+![Streamlit app dashboard showing Jaffle Shop sales metrics and product charts](docs/images/app-screenshot.png)
