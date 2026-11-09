@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.2.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.1.0...v1.2.0) (2026-11-09)
+
+
+### 🚀 New Features
+
+* add sales insights to Streamlit dashboard ([#56](https://github.com/dede0610/project-platform-dbt-databricks/issues/56)) ([5051b82](https://github.com/dede0610/project-platform-dbt-databricks/commit/5051b827349ae6dd8fd52e5b54cd3a2c9e07da34))
+* remove customer subset caption ([#59](https://github.com/dede0610/project-platform-dbt-databricks/issues/59)) ([9ffc766](https://github.com/dede0610/project-platform-dbt-databricks/commit/9ffc7662030f023a7386cddaa9be269303a43662))
+* remove sales trend chart ([#58](https://github.com/dede0610/project-platform-dbt-databricks/issues/58)) ([b828b1e](https://github.com/dede0610/project-platform-dbt-databricks/commit/b828b1eb76b7a2f145afc8c54cf539ddafdedd20))
+
+
+### 🐛 Bug Fixes
+
+* use available order item category fields ([#57](https://github.com/dede0610/project-platform-dbt-databricks/issues/57)) ([8d604c2](https://github.com/dede0610/project-platform-dbt-databricks/commit/8d604c29285ef14d68f950b7b3dae9c60b328a4d))
+
+
+### ⚙️ Maintenance
+
+* exclude src/macros/ from sqlfluff-lint checks ([64b04c8](https://github.com/dede0610/project-platform-dbt-databricks/commit/64b04c8f9ddf95ffdd5da14b887ac6f086307ab7))
+* ignore Streamlit test artifacts ([#62](https://github.com/dede0610/project-platform-dbt-databricks/issues/62)) ([999eaed](https://github.com/dede0610/project-platform-dbt-databricks/commit/999eaeda461422490009cef4aa4afbc40f8a5062))
+* reorganize justfile recipes ([26bba44](https://github.com/dede0610/project-platform-dbt-databricks/commit/26bba445d6a9493d395f0b6d69e774fbeb5dd904))
+* simplify date casting in staging SQL models ([c698039](https://github.com/dede0610/project-platform-dbt-databricks/commit/c6980392dd8c4d85dd4ce34806fa99b3c2499042))
+* update SQLFluff configuration for dbt templater and project directory ([79c275e](https://github.com/dede0610/project-platform-dbt-databricks/commit/79c275e78c304419520716b407ef96dcbfa1fabe))
+* update sqlfluff version and dependencies in pre-commit config ([24e08e5](https://github.com/dede0610/project-platform-dbt-databricks/commit/24e08e5f5d7dd9341f900301653620c34ed184df))
+
+
+### 📚 Documentation
+
+* add repository Copilot instructions ([#51](https://github.com/dede0610/project-platform-dbt-databricks/issues/51)) ([87614d5](https://github.com/dede0610/project-platform-dbt-databricks/commit/87614d563296cfa72608da82cb9f9ae31a5d63fe))
+* document dedicated dbt ci service principal ([#64](https://github.com/dede0610/project-platform-dbt-databricks/issues/64)) ([0a1fe04](https://github.com/dede0610/project-platform-dbt-databricks/commit/0a1fe04c6e08ee2cb3142fbb31d05214ae849069))
+* list Streamlit app tests in repository structure ([#67](https://github.com/dede0610/project-platform-dbt-databricks/issues/67)) ([e73161d](https://github.com/dede0610/project-platform-dbt-databricks/commit/e73161d7e37a1ad7e58e9fb05c75f717ef463a82))
+* show repository structure as a tree ([cf30382](https://github.com/dede0610/project-platform-dbt-databricks/commit/cf30382b7d4b9303ecbcba3fd51464600cb95cb9))
+* simplify pull request template ([#52](https://github.com/dede0610/project-platform-dbt-databricks/issues/52)) ([aca90c3](https://github.com/dede0610/project-platform-dbt-databricks/commit/aca90c341a523f0cfcc551db8861ba3b9a3cd8e6))
+
 ## [1.1.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.0.0...v1.1.0) (2026-10-27)
 
 
