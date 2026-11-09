@@ -236,14 +236,14 @@ The generated site includes model and column metadata and is publicly accessible
 
 ## Screenshots
 
-### Streamlit app
+### Databricks jobs
 
-![Streamlit app dashboard showing Jaffle Shop sales metrics and product charts](docs/images/App-screenshot.png)
+![Databricks Jobs page showing the dbt job deployed to dev, test, and production](docs/images/Databricks-jobs.png)
 
 ### Databricks apps
 
 ![Databricks Apps page showing the dev, test, and production Streamlit apps](docs/images/Databricks-apps.png)
 
-### Databricks jobs
+### Streamlit app
 
-![Databricks Jobs page showing the dbt job deployed to dev, test, and production](docs/images/Databricks-jobs.png)
+![Streamlit app dashboard showing Jaffle Shop sales metrics and product charts](docs/images/App-screenshot.png)
