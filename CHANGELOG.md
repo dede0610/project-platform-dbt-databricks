@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.2.0...v1.2.1) (2026-11-22)
+
+
+### 🐛 Bug Fixes
+
+* remove customer name filter ([#68](https://github.com/dede0610/project-platform-dbt-databricks/issues/68)) ([f758822](https://github.com/dede0610/project-platform-dbt-databricks/commit/f7588221c4324eed3906c8cfa63f50b5ce061f97))
+
 ## [1.2.0](https://github.com/dede0610/project-platform-dbt-databricks/compare/v1.1.0...v1.2.0) (2026-11-09)
 
 
